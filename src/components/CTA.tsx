@@ -1,5 +1,6 @@
 
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const CTA = () => {
   return (
@@ -13,11 +14,11 @@ const CTA = () => {
             Join thousands of job seekers who are getting more interviews with Rezia's AI-powered resume optimization.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in" style={{animationDelay: '0.4s'}}>
-            <Button className="bg-white text-rezia-blue hover:bg-white/90 text-lg h-12 px-8">
-              Start Optimizing for Free
+            <Button asChild className="bg-white text-rezia-blue hover:bg-white/90 text-lg h-12 px-8">
+              <Link to="/get-started">Start Optimizing for Free</Link>
             </Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white/10 text-lg h-12 px-8">
-              View Pricing
+            <Button asChild variant="outline" className="border-white text-white hover:bg-white/10 text-lg h-12 px-8">
+              <Link to="/get-started">View Pricing</Link>
             </Button>
           </div>
         </div>
