@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,19 +38,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -95,7 +91,35 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+    font-family: 'Inter', sans-serif;
+  }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  .gradient-bg {
+    @apply bg-gradient-to-br from-rezia-blue to-rezia-turquoise;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-rezia-blue to-rezia-turquoise bg-clip-text text-transparent;
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 80%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(94, 95, 238, 0.15) 0%, rgba(51, 230, 230, 0.05) 50%, transparent 70%);
+    filter: blur(40px);
+    z-index: -1;
+    top: 10%;
+    left: 10%;
+  }
+
+  .feature-card {
+    @apply relative p-6 rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md;
   }
 }
