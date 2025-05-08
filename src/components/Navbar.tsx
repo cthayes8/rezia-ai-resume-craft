@@ -1,12 +1,14 @@
-
+ 'use client';
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { Button } from "@/components/ui/button";
+import { useUser, SignOutButton } from '@clerk/nextjs';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const location = useLocation();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,11 +19,7 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu when changing routes
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
-
+  const { isSignedIn } = useUser();
   return (
     <nav className={`sticky top-0 z-50 w-full transition-all duration-300 ${
       isScrolled ? 'bg-white shadow-md' : 'bg-transparent'
@@ -29,7 +27,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="flex-shrink-0">
+            <Link href="/" className="flex-shrink-0">
               <img 
                 src="/lovable-uploads/2129f9cc-86c3-4db8-b827-5c01659ad64b.png" 
                 alt="Rezia" 
@@ -39,27 +37,27 @@ const Navbar = () => {
             <div className="hidden md:block ml-10">
               <div className="flex items-center space-x-4">
                 <Link
-                  to="/"
+                  href="/"
                   className={`px-3 py-2 rounded-md text-sm font-medium ${
-                    location.pathname === '/' ? 'text-rezia-blue' : 'text-gray-700 hover:text-rezia-blue'
+                    router.pathname === '/' ? 'text-rezia-blue' : 'text-gray-700 hover:text-rezia-blue'
                   }`}
                 >
                   Home
                 </Link>
                 <Link
-                  to="#features"
+                  href="#features"
                   className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-rezia-blue"
                 >
                   Features
                 </Link>
                 <Link
-                  to="#how-it-works"
+                  href="#how-it-works"
                   className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-rezia-blue"
                 >
                   How It Works
                 </Link>
                 <Link
-                  to="#pricing"
+                  href="#pricing"
                   className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-rezia-blue"
                 >
                   Pricing
@@ -69,12 +67,20 @@ const Navbar = () => {
           </div>
           <div className="hidden md:block">
             <div className="flex items-center space-x-4">
-              <Button asChild variant="outline" className="border-rezia-blue text-rezia-blue hover:bg-rezia-blue/10">
-                <Link to="/signin">Sign In</Link>
-              </Button>
-              <Button asChild className="bg-rezia-blue hover:bg-rezia-blue/90">
-                <Link to="/get-started">Get Started</Link>
-              </Button>
+              {isSignedIn ? (
+                <SignOutButton>
+                  <Button variant="outline">Sign Out</Button>
+                </SignOutButton>
+              ) : (
+                <>
+                  <Button asChild variant="outline" className="border-rezia-blue text-rezia-blue hover:bg-rezia-blue/10">
+                    <Link href="/sign-in">Sign In</Link>
+                  </Button>
+                  <Button asChild className="bg-rezia-blue hover:bg-rezia-blue/90">
+                    <Link href="/sign-up">Get Started</Link>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
           <div className="md:hidden">
@@ -96,42 +102,52 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-      {isMobileMenuOpen && (
+          {isMobileMenuOpen && (
         <div className="md:hidden bg-white shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <Link
-              to="/"
+              href="/"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rezia-blue"
             >
               Home
             </Link>
             <Link
-              to="#features"
+              href="#features"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rezia-blue"
             >
               Features
             </Link>
             <Link
-              to="#how-it-works"
+              href="#how-it-works"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rezia-blue"
             >
               How It Works
             </Link>
             <Link
-              to="#pricing"
+              href="#pricing"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rezia-blue"
             >
               Pricing
             </Link>
           </div>
-          <div className="pt-4 pb-3 border-t border-gray-200 flex flex-col space-y-2 px-3">
-            <Button asChild variant="outline" className="w-full justify-center border-rezia-blue text-rezia-blue hover:bg-rezia-blue/10">
-              <Link to="/signin">Sign In</Link>
-            </Button>
-            <Button asChild className="w-full justify-center bg-rezia-blue hover:bg-rezia-blue/90">
-              <Link to="/get-started">Get Started</Link>
-            </Button>
-          </div>
+            <div className="pt-4 pb-3 border-t border-gray-200 flex flex-col space-y-2 px-3">
+              {isSignedIn ? (
+                <SignOutButton>
+                  <Button className="w-full justify-center" variant="outline">
+                    Sign Out
+                  </Button>
+                </SignOutButton>
+              ) : (
+                <>
+                  <Button asChild variant="outline" className="w-full justify-center border-rezia-blue text-rezia-blue hover:bg-rezia-blue/10">
+                    <Link href="/sign-in">Sign In</Link>
+                  </Button>
+                  <Button asChild className="w-full justify-center bg-rezia-blue hover:bg-rezia-blue/90">
+                    <Link href="/sign-up">Get Started</Link>
+                  </Button>
+                </>
+              )}
+            </div>
         </div>
       )}
     </nav>

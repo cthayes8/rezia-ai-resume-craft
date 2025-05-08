@@ -1,5 +1,5 @@
-
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { FileText, History, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -7,30 +7,25 @@ export type SidebarLink = {
   icon: React.ElementType;
   label: string;
   href: string;
-  active?: boolean;
 };
 
 const DashboardSidebar = () => {
-  const location = useLocation();
-  
+  const router = useRouter();
   const links: SidebarLink[] = [
     {
       icon: FileText,
       label: "Optimize",
       href: "/dashboard",
-      active: location.pathname === "/dashboard",
     },
     {
       icon: History,
       label: "History",
       href: "/dashboard/history",
-      active: location.pathname === "/dashboard/history",
     },
     {
       icon: Settings,
       label: "My Account",
       href: "/dashboard/account",
-      active: location.pathname === "/dashboard/account",
     },
   ];
 
@@ -38,7 +33,7 @@ const DashboardSidebar = () => {
     <div className="hidden lg:block min-h-screen w-64 bg-white border-r border-gray-200">
       <div className="h-full flex flex-col">
         <div className="p-4 border-b border-gray-200">
-          <Link to="/" className="flex items-center">
+          <Link href="/" className="flex items-center">
             <img 
               src="/lovable-uploads/2129f9cc-86c3-4db8-b827-5c01659ad64b.png" 
               alt="Rezia Logo" 
@@ -51,10 +46,10 @@ const DashboardSidebar = () => {
           {links.map((link) => (
             <Link
               key={link.href}
-              to={link.href}
+              href={link.href}
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                link.active
+                router.pathname === link.href
                   ? "bg-rezia-blue text-white"
                   : "text-gray-700 hover:bg-gray-100"
               )}

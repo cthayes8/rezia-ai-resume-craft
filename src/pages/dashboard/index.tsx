@@ -1,15 +1,12 @@
-
-import { useState } from "react";
-import { Outlet } from "react-router-dom";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import MobileSidebar from "@/components/dashboard/MobileSidebar";
+import ResumeUpload from "@/components/dashboard/ResumeUpload";
 
 const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="flex min-h-screen">
         <DashboardSidebar />
-        
         <div className="flex-1">
           <div className="p-4 lg:px-6 border-b bg-white">
             <div className="flex justify-between items-center">
@@ -21,9 +18,8 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          
           <div className="p-4 lg:p-6">
-            <Outlet />
+            <ResumeUpload />
           </div>
         </div>
       </div>
@@ -31,4 +27,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Dashboard; 
