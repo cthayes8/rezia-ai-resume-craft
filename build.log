@@ -1,0 +1,10 @@
+
+> next_react_shadcn_ts@0.0.0 build
+> next build
+
+   ▲ Next.js 15.3.2
+   - Environments: .env.local, .env
+
+ ⨯ Conflicting app and page files were found, please remove the conflicting files to continue:
+ ⨯   "pages/api/extract-jd-info.ts" - "app/api/extract-jd-info/route.ts"
+ ⨯   "pages/api/parse-resume.ts" - "app/api/parse-resume/route.ts"

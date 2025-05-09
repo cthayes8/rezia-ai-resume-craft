@@ -18,7 +18,22 @@ const ResumeUpload = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const { toast } = useToast();
-  const { setCurrentResume, setLoading, setError, setProgress } = useResumeStore();
+  const {
+    setOriginalResumeData,
+    setResumeData,
+    setJobDescription: setStoreJobDescription,
+    setKeywords,
+    setTargetTitle,
+    setTargetCompany,
+    setRequirements,
+    setKeywordAssignments,
+    setBulletRewrites,
+    setSummaryRewrite,
+    setSkillsRewrite,
+    setLoading,
+    setError,
+    setProgress
+  } = useResumeStore();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -43,105 +58,55 @@ const ResumeUpload = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!file) {
-      toast({
-        title: "No file selected",
-        description: "Please upload your resume.",
-        variant: "destructive",
-      });
+      toast({ title: "No file", description: "Upload a resume file.", variant: "destructive" });
       return;
     }
-    
     if (!jobDescription.trim()) {
-      toast({
-        title: "Job description required",
-        description: "Please add the job description.",
-        variant: "destructive",
-      });
+      toast({ title: "No JD", description: "Add a job description.", variant: "destructive" });
       return;
     }
-    
+    // Store job description in global store
+    setStoreJobDescription(jobDescription);
     setIsUploading(true);
     setLoading(true);
     setError(null);
-    
     try {
-      // Extract text from uploaded file
+      // Extract resume text (use mammoth for .docx)
       let resumeText: string;
       if (file.name.toLowerCase().endsWith('.docx')) {
         try {
           const arrayBuffer = await file.arrayBuffer();
+          // @ts-ignore mammoth types might be missing
           const { value } = await mammoth.extractRawText({ arrayBuffer });
           resumeText = value;
-        } catch (err) {
-          console.warn('[ResumeUpload] mammoth extraction failed, falling back to raw text', err);
+        } catch {
           resumeText = await file.text();
         }
       } else {
         resumeText = await file.text();
       }
-      
-      // Call the optimize-resume API
+      // Call the optimized orchestrator endpoint
       const response = await fetch('/api/optimize-resume', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          resumeText,
-          jobDescription,
-          fileName: file.name,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resumeText, jobDescription, fileName: file.name }),
       });
-
       if (!response.ok) {
-        throw new Error('Failed to optimize resume');
+        const errText = await response.text();
+        throw new Error(errText || 'Failed to optimize resume');
       }
-
-      // Get the reader from the response body
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error('No reader available');
-      }
-
-      // Navigate to loading page
-      router.push("/dashboard/optimize/loading");
-
-      // Process the stream
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        // Parse the streamed data
-        const text = new TextDecoder().decode(value);
-        const updates = text.split('\n').filter(Boolean).map((line: string) => JSON.parse(line));
-
-        for (const update of updates) {
-          if (update.status === 'error') {
-            setError(update.error);
-            return;
-          }
-
-          if (update.status === 'complete') {
-            setCurrentResume(update.data);
-            return;
-          }
-
-          // Update progress
-          setProgress(update);
-        }
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to optimize resume. Please try again.",
-        variant: "destructive",
-      });
-      setError(error instanceof Error ? error.message : 'Unknown error');
-    } finally {
-      setIsUploading(false);
+      const data = await response.json();
+      // Store results for viewer
+      localStorage.setItem('optimizationResults', JSON.stringify(data));
+      // Navigate to results
+      router.push('/dashboard/optimize/results');
+    } catch (err: any) {
+      console.error('Optimize resume error:', err);
+      toast({ title: 'Error', description: err.message || 'Unknown error', variant: 'destructive' });
+      setError(err.message || '');
       setLoading(false);
+      setIsUploading(false);
     }
   };
 

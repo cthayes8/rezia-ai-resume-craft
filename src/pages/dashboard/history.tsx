@@ -1,7 +1,12 @@
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import HistoryPage from "@/components/dashboard/HistoryPage";
 
 const DashboardHistory = () => {
-  return <HistoryPage />;
+  return (
+    <DashboardLayout>
+      <HistoryPage />
+    </DashboardLayout>
+  );
 };
 
-export default DashboardHistory; 
+export default DashboardHistory;

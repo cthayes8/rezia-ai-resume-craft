@@ -1,0 +1,143 @@
+/* templates.css — Three true 10/10 resume templates */
+
+@page {
+  size: letter;
+  margin: 0.75in;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: white;
+  color: #222;
+  line-height: 1.6;
+  font-size: 12.5px;
+}
+
+/* === TEMPLATE 1: Classic Clean === */
+body.template-classic {
+  font-family: 'Georgia', serif;
+  max-width: 800px;
+  margin: auto;
+  padding: 48px;
+}
+
+.template-classic h1 {
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+.template-classic .contact {
+  font-size: 11px;
+  color: #444;
+  margin-bottom: 24px;
+}
+.template-classic h2 {
+  font-size: 14px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #ccc;
+  margin-top: 32px;
+  padding-bottom: 6px;
+  letter-spacing: 1px;
+}
+.template-classic h3 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 12px 0 4px;
+}
+.template-classic .job-entry {
+  margin-bottom: 24px;
+}
+
+/* === TEMPLATE 2: Modern Professional === */
+body.template-modern {
+  font-family: 'Inter', sans-serif;
+  max-width: 850px;
+  margin: auto;
+  padding: 48px;
+}
+
+.template-modern h1 {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.template-modern .contact {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 24px;
+}
+.template-modern h2 {
+  font-size: 14px;
+  text-transform: uppercase;
+  border-left: 4px solid #3B82F6;
+  padding-left: 12px;
+  color: #3B82F6;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+.template-modern h3 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 12px 0 4px;
+}
+.template-modern .job-entry {
+  margin-bottom: 24px;
+}
+.template-modern ul {
+  padding-left: 20px;
+}
+
+/* === TEMPLATE 3: Sleek Tech === */
+body.template-tech {
+  font-family: 'Helvetica Neue', sans-serif;
+  max-width: 860px;
+  margin: auto;
+  padding: 48px;
+  background: #f9f9f9;
+}
+
+.template-tech h1 {
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+.template-tech .contact {
+  font-size: 11.5px;
+  color: #444;
+  margin-bottom: 20px;
+}
+.template-tech h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #3B82F6;
+  color: #3B82F6;
+  margin-top: 32px;
+  padding-bottom: 6px;
+  letter-spacing: 0.8px;
+}
+.template-tech h3 {
+  font-size: 12.5px;
+  margin-top: 10px;
+  font-weight: bold;
+}
+.template-tech .job-entry {
+  margin-bottom: 20px;
+}
+.template-tech ul {
+  padding-left: 18px;
+  margin-top: 4px;
+}
+
+/* Utility classes */
+.job-entry {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.skills-list span {
+  background: #efefef;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-right: 6px;
+  margin-bottom: 6px;
+  display: inline-block;
+  font-size: 11px;
+}

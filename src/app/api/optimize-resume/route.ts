@@ -3,23 +3,12 @@ import { auth } from '@clerk/nextjs/server';
 import { clerkClient } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { createHash } from 'crypto';
-import { StreamingTextResponse } from 'ai';
-import { 
-  ResumeData, 
-  ExtractJDInfoResponse,
-  ParseResumeResponse,
-  MapKeywordsResponse,
-  RewriteBulletResponse,
-  RewriteSummaryResponse,
-  RewriteSkillsResponse,
-  OptimizationRunData,
-  KeywordAssignment,
-  BulletRewriteResult
-} from '@/types/resume';
-import fetch from 'node-fetch';
 
-// Configure for Edge runtime
-export const runtime = 'edge';
+import type { ResumeData, ExtractJDInfoResponse, ParseResumeResponse, MapKeywordsResponse, RewriteBulletResponse, RewriteSummaryResponse, RewriteSkillsResponse, OptimizationRunData, BulletRewriteResult } from '@/types/resume';
+// heavy parsing steps moved to Pages API for faster warm lambdas
+// Removed direct import of internal API handlers; using HTTP fetch to Pages API instead
+
+export const runtime = 'nodejs';
 
 interface OptimizeResumeRequest {
   resumeText: string;
@@ -29,186 +18,122 @@ interface OptimizeResumeRequest {
 }
 
 /**
- * API Route: Full orchestration of resume optimization with streaming progress updates
+ * API Route: Full orchestration of resume optimization as a single Node.js function
  */
 export async function POST(req: Request) {
   try {
-    const { resumeText, jobDescription, templateId, fileName } = await req.json() as OptimizeResumeRequest;
-
+    const { resumeText, jobDescription, templateId, fileName } = (await req.json()) as OptimizeResumeRequest;
     if (!resumeText || !jobDescription) {
-      return NextResponse.json(
-        { error: 'Missing resumeText or jobDescription' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing resumeText or jobDescription' }, { status: 400 });
     }
 
-    // Create a stream for progress updates
-    const stream = new TransformStream();
-    const writer = stream.writable.getWriter();
-
-    // Start processing in the background
-    processResume(resumeText, jobDescription, templateId, fileName, writer);
-
-    // Return the stream immediately
-    return new StreamingTextResponse(stream.readable);
-  } catch (err: any) {
-    console.error('Error in optimize-resume:', err);
-    return NextResponse.json(
-      { error: err.message || 'Internal error' },
-      { status: 500 }
-    );
-  }
-}
-
-async function processResume(
-  resumeText: string,
-  jobDescription: string,
-  templateId: string | undefined,
-  fileName: string | undefined,
-  writer: WritableStreamDefaultWriter
-) {
-  try {
     // Authenticate user
     const session = await auth();
     const userId = session.userId;
     if (!userId) {
-      await writer.write(JSON.stringify({ error: 'Unauthorized' }) + '\n');
-      await writer.close();
-      return;
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Send initial status
-    await writer.write(JSON.stringify({ 
-      status: 'started',
-      step: 'authenticating'
-    }) + '\n');
-
-    // Ensure user exists in our database
-    const clerkClientInstance = await clerkClient();
-    const clerkUser = await clerkClientInstance.users.getUser(userId);
+    // Ensure user record
+    const clerkUser = await (await clerkClient()).users.getUser(userId);
     const email = clerkUser.emailAddresses[0]?.emailAddress || '';
     const fullName = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim();
-
     await prisma.user.upsert({
       where: { id: userId },
       create: { id: userId, email, fullName },
       update: { email, fullName },
     });
 
-    // Compute hash for deduplication
+    // Save resume file metadata
     const originalTextHash = createHash('sha256').update(resumeText).digest('hex');
-
-    // Persist resume file metadata
     const resumeFile = await prisma.resumeFile.create({
-      data: {
-        userId,
-        fileName: fileName || '',
-        filePath: '',
-        originalTextHash,
-      },
+      data: { userId, fileName: fileName || '', filePath: '', originalTextHash },
     });
 
-    // Construct base URL for internal fetches
+    // Construct base URL for Pages API fetches
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
     const host = req.headers.get('host');
     const baseUrl = `${protocol}://${host}`;
-
-    // 1. Extract JD info
-    await writer.write(JSON.stringify({ 
-      status: 'progress',
-      step: 'extracting_jd_info'
-    }) + '\n');
-
+    // 1. Extract JD info via Pages API
     const jdRes = await fetch(`${baseUrl}/api/extract-jd-info`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jobDescription }),
     });
     if (!jdRes.ok) throw new Error('extract-jd-info failed');
-    const { keywords, targetTitle, targetCompany, requirements } = await jdRes.json() as ExtractJDInfoResponse;
+    const { keywords, targetTitle, targetCompany, requirements } = (await jdRes.json()) as ExtractJDInfoResponse;
 
-    // 2. Parse resume
-    await writer.write(JSON.stringify({ 
-      status: 'progress',
-      step: 'parsing_resume'
-    }) + '\n');
-
+    // 2. Parse resume via Pages API (with caching)
     const parseRes = await fetch(`${baseUrl}/api/parse-resume`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ resume: resumeText, jobDescription }),
     });
     if (!parseRes.ok) throw new Error('parse-resume failed');
-    const { parsedResume } = await parseRes.json() as ParseResumeResponse;
-    const updated: ResumeData = parsedResume;
+    const { parsedResume } = (await parseRes.json()) as ParseResumeResponse;
+    let updated: ResumeData = parsedResume;
 
-    // 3. Map keywords
-    await writer.write(JSON.stringify({ 
-      status: 'progress',
-      step: 'mapping_keywords'
-    }) + '\n');
-
+    // 3. Map keywords via Pages API
     const mapRes = await fetch(`${baseUrl}/api/map-keywords`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ resumeData: updated, keywords }),
     });
     if (!mapRes.ok) throw new Error('map-keywords failed');
-    const { assignments } = await mapRes.json() as MapKeywordsResponse;
+    const { assignments } = (await mapRes.json()) as MapKeywordsResponse;
 
-    // 4. Rewrite all bullets sequentially
+    // 4. Rewrite bullets in parallel with limited concurrency
     const rewriteResults: BulletRewriteResult[] = [];
-    const usedVerbs: string[] = [];
-    
-    for (let wi = 0; wi < updated.work.length; wi++) {
-      for (let bi = 0; bi < updated.work[wi].bullets.length; bi++) {
-        await writer.write(JSON.stringify({ 
-          status: 'progress',
-          step: 'rewriting_bullet',
-          data: { workIndex: wi, bulletIndex: bi }
-        }) + '\n');
-
-        const bullet = updated.work[wi].bullets[bi];
-        const assignment = assignments.find((a: KeywordAssignment) => a.workIndex === wi && a.bulletIndex === bi);
-        const assignedKeywords = assignment?.assignedKeywords || [];
-        
-        const bulletRes = await fetch(`${baseUrl}/api/rewrite-bullet`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            bullet,
-            keywords: assignedKeywords,
-            jobTitle: updated.work[wi].title,
-            company: updated.work[wi].company,
-            jobDescription,
-            skills: updated.skills,
-            targetTitle,
-            targetCompany,
-            requirements,
-            usedVerbs,
-          }),
-        });
-        if (!bulletRes.ok) throw new Error('rewrite-bullet failed');
-        const { rewrittenBullet, keywordsUsed } = await bulletRes.json() as RewriteBulletResponse;
-        const verb = rewrittenBullet.trim().split(/\s+/)[0];
-        usedVerbs.push(verb);
+    // Prepare tasks for each bullet
+    const tasks: { wi: number; bi: number; bullet: string; assignedKeywords: string[] }[] = [];
+    updated.work.forEach((workItem, wi) => {
+      workItem.bullets.forEach((bullet, bi) => {
+        const assignment = assignments.find((a) => a.workIndex === wi && a.bulletIndex === bi);
+        tasks.push({ wi, bi, bullet, assignedKeywords: assignment?.assignedKeywords || [] });
+      });
+    });
+    const concurrency = 3;
+    for (let i = 0; i < tasks.length; i += concurrency) {
+      const batch = tasks.slice(i, i + concurrency);
+      const results = await Promise.all(
+        batch.map(async ({ wi, bi, bullet, assignedKeywords }) => {
+          // Rewrite bullet via Pages API
+          const bulletRes = await fetch(`${baseUrl}/api/rewrite-bullet`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              bullet,
+              keywords: assignedKeywords,
+              jobTitle: updated.work[wi].title,
+              company: updated.work[wi].company,
+              jobDescription,
+              skills: updated.skills,
+              targetTitle,
+              targetCompany,
+              requirements,
+              usedVerbs: [],
+            }),
+          });
+          if (!bulletRes.ok) throw new Error('rewrite-bullet failed');
+          const { rewrittenBullet, keywordsUsed } = (await bulletRes.json()) as RewriteBulletResponse;
+          return { wi, bi, rewrittenBullet, keywordsUsed };
+        })
+      );
+      // Apply results
+      results.forEach(({ wi, bi, rewrittenBullet, keywordsUsed }) => {
         updated.work[wi].bullets[bi] = rewrittenBullet;
         rewriteResults.push({ workIndex: wi, bulletIndex: bi, rewrittenBullet, keywordsUsed });
-      }
+      });
     }
 
     // 5. Rewrite summary
-    await writer.write(JSON.stringify({ 
-      status: 'progress',
-      step: 'rewriting_summary'
-    }) + '\n');
-
+    // 5. Rewrite summary via Pages API
     const summaryRes = await fetch(`${baseUrl}/api/rewrite-summary`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         originalSummary: parsedResume.summary,
-        optimizedBullets: updated.work.flatMap(w => w.bullets),
+        optimizedBullets: updated.work.flatMap((w) => w.bullets),
         skills: updated.skills,
         targetTitle,
         targetCompany,
@@ -217,24 +142,19 @@ async function processResume(
         jobDescription,
       }),
     });
-    if (summaryRes.ok) {
-      const { rewrittenSummary } = await summaryRes.json() as RewriteSummaryResponse;
-      updated.summary = rewrittenSummary;
-    }
+    if (!summaryRes.ok) throw new Error('rewrite-summary failed');
+    const { rewrittenSummary } = (await summaryRes.json()) as RewriteSummaryResponse;
+    updated.summary = rewrittenSummary;
 
     // 6. Rewrite skills
-    await writer.write(JSON.stringify({ 
-      status: 'progress',
-      step: 'rewriting_skills'
-    }) + '\n');
-
+    // 6. Rewrite skills via Pages API
     const skillsRes = await fetch(`${baseUrl}/api/rewrite-skills`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         originalSkills: updated.skills,
         optimizedSummary: updated.summary,
-        optimizedBullets: updated.work.flatMap(w => w.bullets),
+        optimizedBullets: updated.work.flatMap((w) => w.bullets),
         keywords,
         targetTitle,
         targetCompany,
@@ -242,10 +162,9 @@ async function processResume(
         jobDescription,
       }),
     });
-    if (skillsRes.ok) {
-      const { rewrittenSkills } = await skillsRes.json() as RewriteSkillsResponse;
-      updated.skills = rewrittenSkills;
-    }
+    if (!skillsRes.ok) throw new Error('rewrite-skills failed');
+    const { rewrittenSkills } = (await skillsRes.json()) as RewriteSkillsResponse;
+    updated.skills = rewrittenSkills;
 
     // Persist optimization run
     const runData: OptimizationRunData = {
@@ -266,32 +185,20 @@ async function processResume(
       tokenCount: 0,
       costUsd: 0,
     };
+    const run = await prisma.optimizationRun.create({ data: runData as any });
 
-    const run = await prisma.optimizationRun.create({
-      data: runData as any,
+    // Return full result
+    return NextResponse.json({
+      runId: run.id,
+      originalResume: parsedResume,
+      optimizedResume: updated,
+      keywords,
+      requirements,
+      targetTitle,
+      targetCompany,
     });
-
-    // Send final result
-    await writer.write(JSON.stringify({ 
-      status: 'complete',
-      data: {
-        runId: run.id,
-        originalResume: parsedResume,
-        optimizedResume: updated,
-        keywords,
-        requirements,
-        targetTitle,
-        targetCompany,
-      }
-    }) + '\n');
-
-    await writer.close();
-  } catch (error) {
-    console.error('Error in processResume:', error);
-    await writer.write(JSON.stringify({ 
-      status: 'error',
-      error: error.message || 'Internal error'
-    }) + '\n');
-    await writer.close();
+  } catch (error: any) {
+    console.error('Error in optimize-resume:', error);
+    return NextResponse.json({ error: error.message || 'Internal error' }, { status: 500 });
   }
 }

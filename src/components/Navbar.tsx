@@ -29,7 +29,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0">
               <img 
-                src="/lovable-uploads/2129f9cc-86c3-4db8-b827-5c01659ad64b.png" 
+                src="/Rezia_Logo (1).png" 
                 alt="Rezia" 
                 className="h-10 w-auto" 
               />
@@ -68,9 +68,18 @@ const Navbar = () => {
           <div className="hidden md:block">
             <div className="flex items-center space-x-4">
               {isSignedIn ? (
-                <SignOutButton>
-                  <Button variant="outline">Sign Out</Button>
-                </SignOutButton>
+                <>
+                  {/* Dashboard link for signed-in users */}
+                  <Link
+                    href="/dashboard"
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-rezia-blue"
+                  >
+                    Dashboard
+                  </Link>
+                  <SignOutButton>
+                    <Button variant="outline">Sign Out</Button>
+                  </SignOutButton>
+                </>
               ) : (
                 <>
                   <Button asChild variant="outline" className="border-rezia-blue text-rezia-blue hover:bg-rezia-blue/10">
@@ -132,11 +141,17 @@ const Navbar = () => {
           </div>
             <div className="pt-4 pb-3 border-t border-gray-200 flex flex-col space-y-2 px-3">
               {isSignedIn ? (
-                <SignOutButton>
-                  <Button className="w-full justify-center" variant="outline">
-                    Sign Out
+                <>
+                  {/* Dashboard link for signed-in users (mobile) */}
+                  <Button asChild variant="outline" className="w-full justify-center">
+                    <Link href="/dashboard">Dashboard</Link>
                   </Button>
-                </SignOutButton>
+                  <SignOutButton>
+                    <Button className="w-full justify-center" variant="outline">
+                      Sign Out
+                    </Button>
+                  </SignOutButton>
+                </>
               ) : (
                 <>
                   <Button asChild variant="outline" className="w-full justify-center border-rezia-blue text-rezia-blue hover:bg-rezia-blue/10">

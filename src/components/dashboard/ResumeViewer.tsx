@@ -41,49 +41,64 @@ const ResumeViewer = () => {
 
   const handleDownload = async () => {
     if (!optimizationResults) return;
-
+    // Determine template ID
+    const templateId = template === 'modern'
+      ? 2
+      : template === 'creative'
+        ? 3
+        : 1;
+    // Choose resume data to send
+    const payloadData = showOriginal
+      ? optimizationResults.originalResume
+      : editedResume;
     try {
       const response = await fetch('/api/generate-pdf', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          resumeData: showOriginal 
-            ? optimizationResults.originalResume 
-            : editedResume,
-          template,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resumeData: payloadData, templateId }),
       });
-
       if (!response.ok) {
-        throw new Error('Failed to generate PDF');
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to generate PDF');
       }
-
-      // Get the PDF blob
       const blob = await response.blob();
-      
-      // Create download link
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `resume-${template}.pdf`;
-      document.body.appendChild(a);
-      a.click();
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'resume.pdf';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
       window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-
       toast({
-        title: "Resume downloaded",
-        description: "Your resume has been downloaded successfully.",
+        title: 'Resume download started',
+        description: 'Your resume is being downloaded.',
       });
     } catch (error) {
+      console.error('Download error:', error);
       toast({
-        title: "Error",
-        description: "Failed to generate PDF. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Download failed. Please try again.',
+        variant: 'destructive',
       });
     }
+  };
+  // Edit contact fields (email, phone, link)
+  const handleContactEdit = (field: 'email' | 'phone' | 'link', value: string) => {
+    if (!editedResume || !optimizationResults) return;
+    const newResume = {
+      ...editedResume,
+      contact: {
+        ...editedResume.contact,
+        [field]: value
+      }
+    };
+    setEditedResume(newResume);
+    const updatedResults = {
+      ...optimizationResults,
+      optimizedResume: newResume
+    };
+    localStorage.setItem('optimizationResults', JSON.stringify(updatedResults));
   };
 
   const toggleResume = () => {
@@ -254,9 +269,24 @@ const ResumeViewer = () => {
           <div className="p-8 bg-white border rounded-lg">
             <div className="border-l-4 border-rezia-blue pl-4">
               <h2 className="text-2xl font-bold">{resumeData.name}</h2>
-              <div className="text-sm text-gray-600 mt-1">
-                {resumeData.contact.email} | {resumeData.contact.phone}
-                {resumeData.contact.link && ` | ${resumeData.contact.link}`}
+              <div className="text-sm text-gray-600 mt-1 flex flex-wrap items-center space-x-1">
+                <EditableContent
+                  content={resumeData.contact.email || ''}
+                  onChange={(v) => handleContactEdit('email', v)}
+                  className="inline"
+                />
+                <span>|</span>
+                <EditableContent
+                  content={resumeData.contact.phone || ''}
+                  onChange={(v) => handleContactEdit('phone', v)}
+                  className="inline"
+                />
+                <span>|</span>
+                <EditableContent
+                  content={resumeData.contact.link || ''}
+                  onChange={(v) => handleContactEdit('link', v)}
+                  className="inline"
+                />
               </div>
             </div>
             
@@ -264,7 +294,12 @@ const ResumeViewer = () => {
               {resumeData.summary && (
                 <div>
                   <h3 className="text-lg font-semibold text-rezia-blue">Summary</h3>
-                  <p className="mt-2 text-sm">{resumeData.summary}</p>
+                  <EditableContent
+                    content={resumeData.summary || ''}
+                    onChange={(v) => handleTextEdit('summary', v)}
+                    className="mt-2 text-sm"
+                    multiline
+                  />
                 </div>
               )}
               
@@ -303,21 +338,34 @@ const ResumeViewer = () => {
             <div className="text-center mb-6">
               <h2 className="text-3xl font-bold">{resumeData.name}</h2>
               <div className="flex justify-center gap-4 mt-2 text-sm text-gray-600">
-                <span>{resumeData.contact.email}</span>
+                <EditableContent
+                  content={resumeData.contact.email || ''}
+                  onChange={(v) => handleContactEdit('email', v)}
+                  className=""
+                />
                 <span>•</span>
-                <span>{resumeData.contact.phone}</span>
-                {resumeData.contact.link && (
-                  <>
-                    <span>•</span>
-                    <span>{resumeData.contact.link}</span>
-                  </>
-                )}
+                <EditableContent
+                  content={resumeData.contact.phone || ''}
+                  onChange={(v) => handleContactEdit('phone', v)}
+                  className=""
+                />
+                <span>•</span>
+                <EditableContent
+                  content={resumeData.contact.link || ''}
+                  onChange={(v) => handleContactEdit('link', v)}
+                  className=""
+                />
               </div>
             </div>
             
             {resumeData.summary && (
               <div className="mb-8 text-center">
-                <p className="text-sm text-gray-700">{resumeData.summary}</p>
+                <EditableContent
+                  content={resumeData.summary || ''}
+                  onChange={(v) => handleTextEdit('summary', v)}
+                  className="text-sm text-gray-700"
+                  multiline
+                />
               </div>
             )}
             
@@ -359,16 +407,36 @@ const ResumeViewer = () => {
           <div className="p-8 bg-white border rounded-lg">
             <div>
               <h2 className="text-2xl font-bold">{resumeData.name}</h2>
-              <div className="text-sm text-gray-600 mt-1">
-                {resumeData.contact.email} | {resumeData.contact.phone}
-                {resumeData.contact.link && ` | ${resumeData.contact.link}`}
+              <div className="text-sm text-gray-600 mt-1 flex flex-wrap items-center space-x-1">
+                <EditableContent
+                  content={resumeData.contact.email || ''}
+                  onChange={(v) => handleContactEdit('email', v)}
+                  className="inline"
+                />
+                <span>|</span>
+                <EditableContent
+                  content={resumeData.contact.phone || ''}
+                  onChange={(v) => handleContactEdit('phone', v)}
+                  className="inline"
+                />
+                <span>|</span>
+                <EditableContent
+                  content={resumeData.contact.link || ''}
+                  onChange={(v) => handleContactEdit('link', v)}
+                  className="inline"
+                />
               </div>
             </div>
             
             {resumeData.summary && (
               <div className="mt-6">
                 <h3 className="text-lg font-semibold">Professional Summary</h3>
-                <p className="mt-2 text-sm">{resumeData.summary}</p>
+                <EditableContent
+                  content={resumeData.summary || ''}
+                  onChange={(v) => handleTextEdit('summary', v)}
+                  className="mt-2 text-sm"
+                  multiline
+                />
               </div>
             )}
             

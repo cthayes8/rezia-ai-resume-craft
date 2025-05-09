@@ -35,7 +35,7 @@ const DashboardSidebar = () => {
         <div className="p-4 border-b border-gray-200">
           <Link href="/" className="flex items-center">
             <img 
-              src="/lovable-uploads/2129f9cc-86c3-4db8-b827-5c01659ad64b.png" 
+              src="/Rezia_Logo (1).png" 
               alt="Rezia Logo" 
               className="h-8 w-auto" 
             />
