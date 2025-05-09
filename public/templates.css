@@ -15,7 +15,7 @@ body {
 }
 
 /* === TEMPLATE 1: Classic Clean === */
-body.template-classic {
+body.template-classic, .template-classic {
   font-family: 'Georgia', serif;
   max-width: 800px;
   margin: auto;
@@ -49,7 +49,7 @@ body.template-classic {
 }
 
 /* === TEMPLATE 2: Modern Professional === */
-body.template-modern {
+body.template-modern, .template-modern {
   font-family: 'Inter', sans-serif;
   max-width: 850px;
   margin: auto;
@@ -88,7 +88,7 @@ body.template-modern {
 }
 
 /* === TEMPLATE 3: Sleek Tech === */
-body.template-tech {
+body.template-tech, .template-tech {
   font-family: 'Helvetica Neue', sans-serif;
   max-width: 860px;
   margin: auto;

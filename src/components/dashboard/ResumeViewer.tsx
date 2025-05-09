@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Head from "next/head";
 import {
   Select,
   SelectContent,
@@ -28,6 +29,13 @@ const ResumeViewer = () => {
   const [optimizationResults, setOptimizationResults] = useState<OptimizationResults | null>(null);
   const [editedResume, setEditedResume] = useState<any>(null);
   const { toast } = useToast();
+  // Determine template CSS class name matching public/templates.css
+  const displayTemplateClass =
+    template === 'modern'
+      ? 'template-modern'
+      : template === 'creative'
+        ? 'template-tech'
+        : 'template-classic';
 
   useEffect(() => {
     // Load optimization results from localStorage
@@ -174,8 +182,8 @@ const ResumeViewer = () => {
   // Helper function to render work experience
   const renderWorkExperience = (work: any[]) => {
     return work.map((job, index) => (
-      <div key={index} className="mt-4">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-baseline">
+      <div key={index} className="job-entry">
+        <div className="job-meta">
           <EditableContent
             content={job.title}
             onChange={(value) => handleTextEdit('work', `title|${value}`, index)}
@@ -405,65 +413,66 @@ const ResumeViewer = () => {
       default: // professional template
         return (
           <div className="p-8 bg-white border rounded-lg">
-            <div>
-              <h2 className="text-2xl font-bold">{resumeData.name}</h2>
-              <div className="text-sm text-gray-600 mt-1 flex flex-wrap items-center space-x-1">
-                <EditableContent
-                  content={resumeData.contact.email || ''}
-                  onChange={(v) => handleContactEdit('email', v)}
-                  className="inline"
-                />
-                <span>|</span>
-                <EditableContent
-                  content={resumeData.contact.phone || ''}
-                  onChange={(v) => handleContactEdit('phone', v)}
-                  className="inline"
-                />
-                <span>|</span>
-                <EditableContent
-                  content={resumeData.contact.link || ''}
-                  onChange={(v) => handleContactEdit('link', v)}
-                  className="inline"
-                />
+            {/* Header with name and stacked contact */}
+            <div className="header">
+              <div className="name">{resumeData.name}</div>
+              <div className="contact">
+                <div>
+                  <EditableContent
+                    content={resumeData.contact.email || ''}
+                    onChange={(v) => handleContactEdit('email', v)}
+                  />
+                </div>
+                <div>
+                  <EditableContent
+                    content={resumeData.contact.phone || ''}
+                    onChange={(v) => handleContactEdit('phone', v)}
+                  />
+                </div>
+                <div>
+                  <EditableContent
+                    content={resumeData.contact.link || ''}
+                    onChange={(v) => handleContactEdit('link', v)}
+                  />
+                </div>
               </div>
             </div>
-            
+            {/* Summary section */}
             {resumeData.summary && (
-              <div className="mt-6">
-                <h3 className="text-lg font-semibold">Professional Summary</h3>
+              <section>
+                <h2>Professional Summary</h2>
                 <EditableContent
                   content={resumeData.summary || ''}
                   onChange={(v) => handleTextEdit('summary', v)}
-                  className="mt-2 text-sm"
                   multiline
                 />
-              </div>
+              </section>
             )}
-            
-            <div className="mt-6">
-              <h3 className="text-lg font-semibold">Experience</h3>
+            {/* Work Experience */}
+            <section>
+              <h2>Work Experience</h2>
               {renderWorkExperience(resumeData.work)}
-            </div>
-            
-            <div className="mt-6">
-              <h3 className="text-lg font-semibold">Education</h3>
+            </section>
+            {/* Education */}
+            <section>
+              <h2>Education</h2>
               {renderEducation(resumeData.education)}
-            </div>
-            
-            <div className="mt-6">
-              <h3 className="text-lg font-semibold">Skills</h3>
+            </section>
+            {/* Skills */}
+            <section>
+              <h2>Skills</h2>
               {renderSkills(resumeData.skills)}
-            </div>
-
+            </section>
+            {/* Certifications */}
             {resumeData.certifications?.length > 0 && (
-              <div className="mt-6">
-                <h3 className="text-lg font-semibold">Certifications</h3>
-                <ul className="list-disc pl-5 mt-2 text-sm">
+              <section>
+                <h2>Certifications</h2>
+                <ul>
                   {resumeData.certifications.map((cert: string, i: number) => (
                     <li key={i}>{cert}</li>
                   ))}
                 </ul>
-              </div>
+              </section>
             )}
           </div>
         );
@@ -471,7 +480,12 @@ const ResumeViewer = () => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6">
+    <>
+      {/* Load PDF CSS for true WYSIWYG preview */}
+      <Head>
+        <link rel="stylesheet" href="/templates.css" />
+      </Head>
+      <div className="w-full max-w-4xl mx-auto p-6">
       <div className="flex flex-col lg:flex-row justify-between items-center mb-6 gap-4">
         <div className="flex items-center">
           <h1 className="text-2xl font-bold text-gray-800 mr-6">Your Resume</h1>
@@ -517,10 +531,11 @@ const ResumeViewer = () => {
         </div>
       </div>
       
-      <div className="bg-gray-50 rounded-lg p-6">
+      <div className={displayTemplateClass}>
         {renderResumeContent()}
       </div>
     </div>
+  </>
   );
 };
 

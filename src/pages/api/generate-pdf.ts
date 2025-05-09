@@ -29,7 +29,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!resumeData) {
       return res.status(400).json({ error: 'Missing resumeData' });
     }
-    function renderHtml(resume: ResumeData, templateId: number = 1): string {
+    // Map numeric templateId to CSS class names matching templates.css
+    const templateClass = templateId === 2
+      ? 'template-modern'
+      : templateId === 3
+        ? 'template-tech'
+        : 'template-classic';
+    function renderHtml(resume: ResumeData): string {
       let styles = '';
       try {
         const cssPath = path.join(process.cwd(), 'public', 'templates.css');
@@ -61,8 +67,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         ? `<section><h2>Certifications</h2><ul>${resume.certifications.map(c => `<li>${c}</li>`).join('')}</ul></section>`
         : '';
       return `<!DOCTYPE html>
-<html class="template${templateId}"><head><meta charset="utf-8"/><title>Resume</title>${styles}</head>
-<body>
+<html><head><meta charset="utf-8"/><title>Resume</title>${styles}</head>
+<body class="${templateClass}">
   <div class="header" style="display:flex;justify-content:space-between;align-items:center;">
     <div class="name">${resume.name}</div>
     <div class="contact">
@@ -93,7 +99,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       browser = await pptr.default.launch({ headless: true });
     }
     const page = await browser.newPage();
-    const html = renderHtml(resumeData, templateId);
+    const html = renderHtml(resumeData);
     await page.setContent(html, { waitUntil: 'networkidle2' });
     await page.emulateMediaType('screen');
     const pdfBuffer = await page.pdf({
