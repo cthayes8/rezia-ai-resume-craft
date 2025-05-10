@@ -49,10 +49,12 @@
     "crypto-js": "^4.2.0",
     "date-fns": "^3.6.0",
     "diff-match-patch": "^1.0.5",
+    "docx": "^9.5.0",
     "embla-carousel-react": "^8.3.0",
     "form-data": "^4.0.2",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.462.0",
+    "mammoth": "^1.4.21",
     "next": "^15.3.2",
     "next-themes": "^0.3.0",
     "node-fetch": "^3.3.2",
@@ -70,8 +72,7 @@
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.3",
     "zod": "^3.23.8",
-    "zustand": "^4.5.6",
-    "mammoth": "^1.4.21"
+    "zustand": "^4.5.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

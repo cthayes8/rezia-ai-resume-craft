@@ -1,19 +1,69 @@
-import { useEffect } from 'react';
+"use client";
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useResumeStore } from '@/lib/stores/resumeStore';
-
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/components/ui/use-toast";
 
 const LoadingPage = () => {
   const router = useRouter();
-  const { progress, error, currentResume } = useResumeStore();
+  const { toast } = useToast();
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // If we have a complete resume, navigate to the results page
-    if (currentResume) {
-      router.push('/dashboard/optimize/results');
+    // Retrieve pending request
+    const reqStr = localStorage.getItem('optimizationRequest');
+    if (!reqStr) {
+      router.push('/dashboard');
+      return;
     }
-  }, [currentResume, router]);
+    const { resumeText, jobDescription, fileName } = JSON.parse(reqStr);
+    // Start optimization API call
+    fetch('/api/optimize-resume', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ resumeText, jobDescription, fileName })
+    })
+      .then(async res => {
+        if (!res.ok) {
+          const msg = await res.text();
+          throw new Error(msg || 'Optimization failed');
+        }
+        return res.json();
+      })
+      .then(data => {
+        // Store results and clear request
+        localStorage.setItem('optimizationResults', JSON.stringify(data));
+        localStorage.removeItem('optimizationRequest');
+        // Complete progress and navigate to results
+        setProgress(100);
+        router.push('/dashboard/optimize/results');
+      })
+      .catch(err => {
+        console.error('Optimize error:', err);
+        setError(err.message);
+        toast({ title: 'Error', description: err.message, variant: 'destructive' });
+      });
+    // Simulate incremental progress based on estimated API phase timing
+    const timers: NodeJS.Timeout[] = [];
+    // After extract-jd-info (~4s)
+    timers.push(setTimeout(() => setProgress(10), 4000));
+    // After parse-resume (~4.2s)
+    timers.push(setTimeout(() => setProgress(20), 4200));
+    // After map-keywords (~9s)
+    timers.push(setTimeout(() => setProgress(40), 9200));
+    // After rewrite-bullets (~30s)
+    timers.push(setTimeout(() => setProgress(80), 30000));
+    // After rewrite-summary (~33s)
+    timers.push(setTimeout(() => setProgress(90), 33000));
+    // After rewrite-skills (~35s)
+    timers.push(setTimeout(() => setProgress(95), 35000));
+    // Cleanup on unmount
+    return () => timers.forEach(t => clearTimeout(t));
+  // Run once on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <DashboardLayout>
@@ -27,29 +77,16 @@ const LoadingPage = () => {
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">
             Optimizing Your Resume
           </h2>
-          {progress && (
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-rezia-blue rounded-full animate-pulse" />
-                <span className="text-gray-600">
-                  {progress.step
-                    ?.split('_')
-                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                    .join(' ')}
-                </span>
-              </div>
-              {progress.data?.workIndex !== undefined && (
-                <div className="text-sm text-gray-500">
-                  Processing bullet {progress.data.bulletIndex + 1} of work experience{' '}
-                  {progress.data.workIndex + 1}
-                </div>
-              )}
-            </div>
-          )}
+          <Progress value={progress} className="h-2 mb-4" />
+          <p className="text-gray-600">
+            {progress < 100
+              ? 'Please wait while we tailor your resume...'
+              : 'Finalizing...'}
+          </p>
         </div>
       )}
     </DashboardLayout>
   );
 };
 
-export default LoadingPage; 
+export default LoadingPage;

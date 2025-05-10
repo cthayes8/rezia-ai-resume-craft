@@ -34,6 +34,10 @@ model User {
   feedbacks         Feedback[]
   subscriptions     Subscription[]
   usageEvents       UsageEvent[]
+  /**
+   * Saved resume snapshots (max 3 per user)
+   */
+  savedResumes      SavedResume[]
 }
 
 /// A resume file uploaded by a user
@@ -134,4 +138,15 @@ model UsageEvent {
 
   // Relations
   user       User       @relation(fields: [userId], references: [id])
+}
+
+/// Saved resumes that users can reuse (max 3 per user)
+model SavedResume {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
 }

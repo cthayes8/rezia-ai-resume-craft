@@ -138,6 +138,7 @@ const Navbar = () => {
             >
               Pricing
             </Link>
+
           </div>
             <div className="pt-4 pb-3 border-t border-gray-200 flex flex-col space-y-2 px-3">
               {isSignedIn ? (

@@ -52,7 +52,11 @@ const Footer = () => {
           <div className="col-span-1">
             <h3 className="font-semibold text-lg mb-4">Resources</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-600 hover:text-rezia-blue">Blog</a></li>
+              <li>
+                <a href="https://rezia-ai.ghost.io" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-rezia-blue">
+                  Blog
+                </a>
+              </li>
               <li><a href="#" className="text-gray-600 hover:text-rezia-blue">Resume Templates</a></li>
               <li><a href="#" className="text-gray-600 hover:text-rezia-blue">Career Advice</a></li>
               <li><a href="#faq" className="text-gray-600 hover:text-rezia-blue">FAQ</a></li>

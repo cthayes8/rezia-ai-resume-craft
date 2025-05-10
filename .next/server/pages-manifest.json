@@ -1,0 +1,13 @@
+{
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/_document": "pages/_document.js",
+  "/dashboard/optimize/loading": "pages/dashboard/optimize/loading.js",
+  "/dashboard": "pages/dashboard.js",
+  "/api/rewrite-bullet": "pages/api/rewrite-bullet.js",
+  "/api/map-keywords": "pages/api/map-keywords.js",
+  "/api/generate-docx": "pages/api/generate-docx.js",
+  "/api/rewrite-skills": "pages/api/rewrite-skills.js",
+  "/api/rewrite-summary": "pages/api/rewrite-summary.js",
+  "/dashboard/optimize/results": "pages/dashboard/optimize/results.js"
+}

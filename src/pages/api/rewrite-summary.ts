@@ -20,6 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     requirements,
     keywords,
     jobDescription,
+    experienceSnapshot,
   } = req.body as {
     originalSummary?: string;
     optimizedBullets?: string[];
@@ -29,6 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     requirements?: string[];
     keywords?: string[];
     jobDescription?: string;
+    experienceSnapshot?: string;
   };
   if (
     typeof originalSummary !== 'string' ||
@@ -38,7 +40,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     typeof targetCompany !== 'string' ||
     !Array.isArray(requirements) ||
     !Array.isArray(keywords) ||
-    typeof jobDescription !== 'string'
+    typeof jobDescription !== 'string' ||
+    (experienceSnapshot !== undefined && typeof experienceSnapshot !== 'string')
   ) {
     return res.status(400).json({ error: 'Invalid request payload' });
   }
@@ -50,7 +53,7 @@ Your task is to optimize the summary to better align with a target role, using t
 
 Guidelines:
 - Write in a concise, third-person style (no "I", no first person)
-- Begin with a powerful, differentiated positioning statement — avoid weak openings like "Experienced professional"
+- Begin with a powerful, differentiated positioning statement — avoid weak openings like 'Experienced professional'. For example: “Award-winning enterprise sales leader” or “Strategic revenue executive” to immediately convey value.
 - Write 3–4 value-dense sentences totaling around 60–80 words; each sentence must add unique value
 - Use tone and language appropriate for a seasoned ${targetTitle}, emphasizing strategic impact, technical depth, or leadership contributions as appropriate
 - Highlight alignment with the target role based on skills, achievements, and responsibilities — but do not mention the target company or job title directly
@@ -71,6 +74,9 @@ TARGET ROLE:
 
 KEYWORDS TO INCORPORATE:
 ${keywords.join(', ')}
+
+EXPERIENCE SNAPSHOT:
+${experienceSnapshot}
 
 OPTIMIZED BULLETS:
 ${optimizedBullets.join('\n')}

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 // Use mammoth to extract text from .docx files
 import * as mammoth from 'mammoth';
 import { Button } from "@/components/ui/button";
@@ -15,8 +15,36 @@ const ResumeUpload = () => {
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [savedResumes, setSavedResumes] = useState<{ id: string; name: string; content: string; createdAt: string }[]>([]);
+  const [selectedSavedResumeId, setSelectedSavedResumeId] = useState<string>('new');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  // If linked from Saved page with a resume to use, pre-select it
+  useEffect(() => {
+    const { useSavedResumeId } = router.query;
+    if (typeof useSavedResumeId === 'string') {
+      setSelectedSavedResumeId(useSavedResumeId);
+    }
+  }, [router.query]);
+  // Load user-saved resumes
+  const loadSavedResumes = async () => {
+    try {
+      const res = await fetch('/api/saved-resumes');
+      if (!res.ok) {
+        console.warn('Failed to load saved resumes', res.status, res.statusText);
+        return;
+      }
+      const data = await res.json();
+      setSavedResumes(data);
+      // If there are saved resumes, default to the first one
+      if (data.length > 0) {
+        setSelectedSavedResumeId(data[0].id);
+      }
+    } catch (err) {
+      console.error('Error loading saved resumes:', err);
+    }
+  };
+  useEffect(() => { loadSavedResumes(); }, []);
   const { toast } = useToast();
   const {
     setOriginalResumeData,
@@ -58,56 +86,60 @@ const ResumeUpload = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file) {
-      toast({ title: "No file", description: "Upload a resume file.", variant: "destructive" });
-      return;
-    }
     if (!jobDescription.trim()) {
-      toast({ title: "No JD", description: "Add a job description.", variant: "destructive" });
+      toast({ title: 'No JD', description: 'Add a job description.', variant: 'destructive' });
       return;
     }
-    // Store job description in global store
-    setStoreJobDescription(jobDescription);
-    setIsUploading(true);
-    setLoading(true);
-    setError(null);
-    try {
-      // Extract resume text (use mammoth for .docx)
-      let resumeText: string;
-      if (file.name.toLowerCase().endsWith('.docx')) {
-        try {
-          const arrayBuffer = await file.arrayBuffer();
-          // @ts-ignore mammoth types might be missing
-          const { value } = await mammoth.extractRawText({ arrayBuffer });
-          resumeText = value;
-        } catch {
-          resumeText = await file.text();
+    // Determine source: saved or new upload
+    const useNew = selectedSavedResumeId === 'new';
+    let text: string;
+    let name: string | undefined;
+    if (useNew) {
+      if (!file) {
+        toast({ title: 'No file', description: 'Upload a resume file.', variant: 'destructive' });
+        return;
+      }
+      // Extract text
+      try {
+        if (file.name.toLowerCase().endsWith('.docx')) {
+          const buf = await file.arrayBuffer();
+          // @ts-ignore
+          text = (await mammoth.extractRawText({ arrayBuffer: buf })).value;
+        } else {
+          text = await file.text();
         }
-      } else {
-        resumeText = await file.text();
+      } catch {
+        text = await file.text();
       }
-      // Call the optimized orchestrator endpoint
-      const response = await fetch('/api/optimize-resume', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resumeText, jobDescription, fileName: file.name }),
-      });
-      if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(errText || 'Failed to optimize resume');
+      name = file.name;
+      // Save resume if under limit
+      try {
+        const res = await fetch('/api/saved-resumes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, content: text })
+        });
+        if (res.ok) loadSavedResumes();
+      } catch (err) {
+        console.warn('Save resume failed', err);
       }
-      const data = await response.json();
-      // Store results for viewer
-      localStorage.setItem('optimizationResults', JSON.stringify(data));
-      // Navigate to results
-      router.push('/dashboard/optimize/results');
-    } catch (err: any) {
-      console.error('Optimize resume error:', err);
-      toast({ title: 'Error', description: err.message || 'Unknown error', variant: 'destructive' });
-      setError(err.message || '');
-      setLoading(false);
-      setIsUploading(false);
+    } else {
+      const saved = savedResumes.find(r => r.id === selectedSavedResumeId);
+      if (!saved) {
+        toast({ title: 'Error', description: 'Saved resume not found.', variant: 'destructive' });
+        return;
+      }
+      text = saved.content;
+      name = saved.name;
     }
+    // Kick off optimization: save request and go to loading page
+    setStoreJobDescription(jobDescription);
+    // Persist request data for loading page
+    localStorage.setItem(
+      'optimizationRequest',
+      JSON.stringify({ resumeText: text, jobDescription, fileName: name })
+    );
+    router.push('/dashboard/optimize/loading');
   };
 
   const handleUpload = async (file: File) => {
@@ -175,8 +207,25 @@ const ResumeUpload = () => {
       </div>
       
       <form onSubmit={handleSubmit} className="space-y-8">
+        {savedResumes.length > 0 && (
+          <div className="space-y-2">
+            <Label htmlFor="savedResume">Choose a saved resume (or upload new)</Label>
+            <select
+              id="savedResume"
+              value={selectedSavedResumeId}
+              onChange={e => setSelectedSavedResumeId(e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rezia-blue"
+            >
+              <option value="new">Upload New Resume</option>
+              {savedResumes.map(r => (
+                <option key={r.id} value={r.id}>{r.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+        {selectedSavedResumeId === 'new' && (
         <div className="space-y-4">
-          <div 
+          <div
             className="border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-rezia-blue transition-colors"
             onClick={handleUploadClick}
           >
@@ -202,6 +251,7 @@ const ResumeUpload = () => {
             />
           </div>
         </div>
+        )}
         
         <div className="space-y-2">
           <Label htmlFor="jobDescription">Job Description</Label>

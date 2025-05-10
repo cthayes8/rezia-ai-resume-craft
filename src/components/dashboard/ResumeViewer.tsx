@@ -60,11 +60,11 @@ const ResumeViewer = () => {
       ? optimizationResults.originalResume
       : editedResume;
     try {
-      const response = await fetch('/api/generate-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resumeData: payloadData, templateId }),
-      });
+    const response = await fetch('/api/generate-docx', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ resumeData: payloadData, templateId }),
+    });
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText || 'Failed to generate PDF');
@@ -73,7 +73,7 @@ const ResumeViewer = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'resume.pdf';
+      link.download = 'resume.docx';
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -334,6 +334,24 @@ const ResumeViewer = () => {
                       <li key={i}>{cert}</li>
                     ))}
                   </ul>
+                </div>
+              )}
+              {resumeData.projects?.length > 0 && (
+                <div className="mt-8">
+                  <h3 className="text-lg font-semibold text-rezia-blue">Projects</h3>
+                  <div className="space-y-4 mt-2">
+                    {resumeData.projects.map((proj, idx) => (
+                      <div key={idx} className="bg-gray-50 p-4 rounded-lg">
+                        <h4 className="font-medium text-gray-800">{proj.name}</h4>
+                        <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">{proj.description}</p>
+                        {proj.technologies?.length > 0 && (
+                          <p className="text-xs text-gray-500 mt-2">
+                            Technologies: {proj.technologies.join(', ')}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

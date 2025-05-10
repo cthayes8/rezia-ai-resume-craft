@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FileText, History, Settings, LogOut } from "lucide-react";
+import { FileText, History, Settings, LogOut, Bookmark } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type SidebarLink = {
@@ -23,6 +23,11 @@ const DashboardSidebar = () => {
       href: "/dashboard/history",
     },
     {
+      icon: Bookmark,
+      label: "Saved Resumes",
+      href: "/dashboard/saved",
+    },
+    {
       icon: Settings,
       label: "My Account",
       href: "/dashboard/account",
@@ -34,11 +39,11 @@ const DashboardSidebar = () => {
       <div className="h-full flex flex-col">
         <div className="p-4 border-b border-gray-200">
           <Link href="/" className="flex items-center">
-            <img 
-              src="/Rezia_Logo (1).png" 
-              alt="Rezia Logo" 
-              className="h-8 w-auto" 
-            />
+          <img
+            src="/Rezia_Logo (1).png"
+            alt="Rezia Logo"
+            className="h-10 w-auto"
+          />
           </Link>
         </div>
         

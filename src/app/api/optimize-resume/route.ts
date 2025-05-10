@@ -71,7 +71,10 @@ export async function POST(req: Request) {
     });
     if (!parseRes.ok) throw new Error('parse-resume failed');
     const { parsedResume } = (await parseRes.json()) as ParseResumeResponse;
-    let updated: ResumeData = parsedResume;
+    // Deep-clone to preserve the original parsed resume before mutation
+    const originalParsedResume: ResumeData = JSON.parse(JSON.stringify(parsedResume));
+    // Work on a separate copy for updates
+    let updated: ResumeData = JSON.parse(JSON.stringify(parsedResume));
 
     // 3. Map keywords via Pages API
     const mapRes = await fetch(`${baseUrl}/api/map-keywords`, {
@@ -82,8 +85,10 @@ export async function POST(req: Request) {
     if (!mapRes.ok) throw new Error('map-keywords failed');
     const { assignments } = (await mapRes.json()) as MapKeywordsResponse;
 
-    // 4. Rewrite bullets in parallel with limited concurrency
+    // 4. Rewrite bullets in parallel with limited concurrency, avoiding duplicate start verbs
     const rewriteResults: BulletRewriteResult[] = [];
+    // Track used leading verbs to avoid repetition
+    const usedVerbs: string[] = [];
     // Prepare tasks for each bullet
     const tasks: { wi: number; bi: number; bullet: string; assignedKeywords: string[] }[] = [];
     updated.work.forEach((workItem, wi) => {
@@ -95,9 +100,9 @@ export async function POST(req: Request) {
     const concurrency = 3;
     for (let i = 0; i < tasks.length; i += concurrency) {
       const batch = tasks.slice(i, i + concurrency);
+      // Send rewrite requests, passing already used verbs
       const results = await Promise.all(
         batch.map(async ({ wi, bi, bullet, assignedKeywords }) => {
-          // Rewrite bullet via Pages API
           const bulletRes = await fetch(`${baseUrl}/api/rewrite-bullet`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -111,7 +116,7 @@ export async function POST(req: Request) {
               targetTitle,
               targetCompany,
               requirements,
-              usedVerbs: [],
+              usedVerbs,
             }),
           });
           if (!bulletRes.ok) throw new Error('rewrite-bullet failed');
@@ -119,15 +124,33 @@ export async function POST(req: Request) {
           return { wi, bi, rewrittenBullet, keywordsUsed };
         })
       );
-      // Apply results
+      // Apply results and capture leading verbs
       results.forEach(({ wi, bi, rewrittenBullet, keywordsUsed }) => {
         updated.work[wi].bullets[bi] = rewrittenBullet;
         rewriteResults.push({ workIndex: wi, bulletIndex: bi, rewrittenBullet, keywordsUsed });
+        // Extract first word as verb and track it
+        const firstWord = rewrittenBullet.trim().split(/\s+/)[0].replace(/[^A-Za-z]/g, '');
+        if (firstWord) usedVerbs.push(firstWord.toLowerCase());
       });
     }
 
     // 5. Rewrite summary
     // 5. Rewrite summary via Pages API
+    // Build an experience snapshot for prompt context
+    const companies = Array.from(new Set(parsedResume.work.map(w => w.company))).join(', ');
+    const titles = Array.from(new Set(parsedResume.work.map(w => w.title))).join(', ');
+    const parseYear = (s: string) => {
+      const m = s.match(/\d{4}/);
+      return m ? parseInt(m[0], 10) : null;
+    };
+    const endYears = parsedResume.work.map(w => parseYear(w.to || '') || new Date().getFullYear()).filter((y): y is number => !!y);
+    const startYears = parsedResume.work.map(w => parseYear(w.from || '') || (endYears[0] || new Date().getFullYear())).filter((y): y is number => !!y);
+    const yearsExp = endYears.length && startYears.length ? Math.max(...endYears) - Math.min(...startYears) : null;
+    const experienceSnapshot = [
+      yearsExp ? `${yearsExp}+ years of experience` : '',
+      companies ? `across ${companies}` : '',
+      titles ? `roles as ${titles}` : ''
+    ].filter(Boolean).join(', ') + '.';
     const summaryRes = await fetch(`${baseUrl}/api/rewrite-summary`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -140,6 +163,7 @@ export async function POST(req: Request) {
         requirements,
         keywords,
         jobDescription,
+        experienceSnapshot,
       }),
     });
     if (!summaryRes.ok) throw new Error('rewrite-summary failed');
@@ -166,13 +190,33 @@ export async function POST(req: Request) {
     const { rewrittenSkills } = (await skillsRes.json()) as RewriteSkillsResponse;
     updated.skills = rewrittenSkills;
 
-    // Persist optimization run
+    // 7. Rewrite projects via Pages API (if present)
+    if (parsedResume.projects && parsedResume.projects.length > 0) {
+      const projRes = await fetch(`${baseUrl}/api/rewrite-projects`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projects: parsedResume.projects,
+          keywords,
+          requirements,
+          targetTitle,
+          targetCompany,
+          jobDescription,
+          skills: updated.skills,
+          summary: updated.summary
+        })
+      });
+      if (!projRes.ok) throw new Error('rewrite-projects failed');
+      const { rewrittenProjects } = (await projRes.json()) as { rewrittenProjects: any[] };
+      updated.projects = rewrittenProjects;
+    }
+    // 8. Persist optimization run
     const runData: OptimizationRunData = {
       userId,
       resumeFileId: resumeFile.id,
       jobDescription,
       templateId: String(templateId),
-      originalText: JSON.stringify(parsedResume),
+      originalText: JSON.stringify(originalParsedResume),
       optimizedText: JSON.stringify(updated),
       bulletRewrites: rewriteResults,
       summaryRewrite: updated.summary,
@@ -190,7 +234,7 @@ export async function POST(req: Request) {
     // Return full result
     return NextResponse.json({
       runId: run.id,
-      originalResume: parsedResume,
+      originalResume: originalParsedResume,
       optimizedResume: updated,
       keywords,
       requirements,
