@@ -12,6 +12,19 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+/// Generated cover letters linked to an optimization run
+model CoverLetter {
+  id                 String           @id @default(cuid())
+  userId             String
+  optimizationRunId  String           @unique
+  letterText         String           @db.Text
+  createdAt          DateTime         @default(now())
+
+  // Relations
+  user               User             @relation(fields: [userId], references: [id])
+  optimizationRun    OptimizationRun  @relation(fields: [optimizationRunId], references: [id])
+}
+
 // Core entities
 model User {
   // Clerk user ID
@@ -38,6 +51,8 @@ model User {
    * Saved resume snapshots (max 3 per user)
    */
   savedResumes      SavedResume[]
+  /// Generated cover letters
+  coverLetters      CoverLetter[]
 }
 
 /// A resume file uploaded by a user
@@ -80,6 +95,8 @@ model OptimizationRun {
   resumeFile       ResumeFile?       @relation(fields: [resumeFileId], references: [id])
   feedbacks        Feedback[]
   usageRecords     UsageRecord[]
+  /// Associated cover letter (if generated)
+  coverLetter      CoverLetter?
 }
 
 /// User feedback ratings and comments for a run
@@ -146,6 +163,15 @@ model SavedResume {
   userId    String
   name      String
   content   String   @db.Text
+  /**
+   * Hash of the raw resume text for caching parse results
+   */
+  /// Hash of the raw resume text for caching parse results
+  textHash  String?
+  /**
+   * Cached parsed resume JSON; use to skip re-parsing
+   */
+  parsedData Json?
   createdAt DateTime @default(now())
 
   user      User     @relation(fields: [userId], references: [id])

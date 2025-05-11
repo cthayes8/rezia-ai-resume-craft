@@ -1,16 +1,20 @@
 "use client";
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
+import type { ResumeData } from '@/types/resume';
+import { Loader2 } from 'lucide-react';
 import * as mammoth from 'mammoth';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { FileText, Trash2, Upload } from 'lucide-react';
 import { useRouter } from 'next/router';
 
+// Saved resume with cached parsedData
 type SavedResume = {
   id: string;
   name: string;
   content: string;
+  parsedData?: ResumeData | null;
   createdAt: string;
 };
 
@@ -21,6 +25,7 @@ const SavedResumesPage = () => {
   const [saved, setSaved] = useState<SavedResume[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const loadSaved = async () => {
     try {
@@ -55,8 +60,26 @@ const SavedResumesPage = () => {
     }
   };
 
-  const handleUse = (id: string) => {
-    router.push(`/dashboard?useSavedResumeId=${id}`);
+  const handleUse = async (id: string) => {
+    // Use saved resume's raw content for optimization
+    try {
+      const res = await fetch(`/api/saved-resumes/${id}`);
+      if (!res.ok) throw new Error('Resume not found');
+      const rec = await res.json() as SavedResume;
+      // Prepare payload: always include raw text, plus parsedData if available
+      const payload: any = {
+        resumeText: rec.content,
+        jobDescription: '',
+        fileName: rec.name,
+      };
+      if (rec.parsedData) {
+        payload.resumeData = rec.parsedData;
+      }
+      localStorage.setItem('optimizationRequest', JSON.stringify(payload));
+      router.push('/dashboard/optimize/loading');
+    } catch (err: any) {
+      toast({ title: 'Error', description: err.message || 'Unable to load resume', variant: 'destructive' });
+    }
   };
   // Handle file upload to save a new resume
   const handleUploadClick = () => {
@@ -67,6 +90,7 @@ const SavedResumesPage = () => {
     if (!file) return;
     // extract plain text
     let text = '';
+    setIsSaving(true);
     try {
       if (file.name.toLowerCase().endsWith('.docx')) {
         const buf = await file.arrayBuffer();
@@ -94,6 +118,8 @@ const SavedResumesPage = () => {
     } catch (err: any) {
       console.error('Save resume error', err);
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -116,20 +142,30 @@ const SavedResumesPage = () => {
       {saved.length < 3 && (
         <div
           className="border-2 border-dashed border-gray-300 rounded-lg p-6 mb-6 cursor-pointer hover:border-rezia-blue transition-colors text-center"
-          onClick={handleUploadClick}
+          onClick={isSaving ? undefined : handleUploadClick}
         >
-          <div className="flex flex-col items-center space-y-2">
-            <Upload className="h-8 w-8 text-rezia-blue" />
-            <p className="text-lg font-medium text-gray-700">Click to upload a resume to save</p>
-            <p className="text-sm text-gray-500">PDF or Word documents up to 10MB</p>
-          </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf,.doc,.docx"
-            className="hidden"
-            onChange={handleFileChange}
-          />
+          {isSaving ? (
+            <div className="flex flex-col items-center space-y-2">
+              <Loader2 className="h-8 w-8 text-rezia-blue animate-spin" />
+              <p className="text-lg font-medium text-gray-700">Saving resume...</p>
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-col items-center space-y-2">
+                <Upload className="h-8 w-8 text-rezia-blue" />
+                <p className="text-lg font-medium text-gray-700">Click to upload a resume to save</p>
+                <p className="text-sm text-gray-500">PDF or Word documents up to 10MB</p>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.doc,.docx"
+                className="hidden"
+                onChange={handleFileChange}
+                disabled={isSaving}
+              />
+            </>
+          )}
         </div>
       )}
       {saved.length > 0 ? (

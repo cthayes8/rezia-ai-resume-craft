@@ -9,13 +9,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Upload } from "lucide-react";
 import { useRouter } from "next/router";
 import { useToast } from "@/components/ui/use-toast";
+import type { ResumeData } from '@/types/resume';
 import { useResumeStore } from '@/lib/stores/resumeStore';
 
 const ResumeUpload = () => {
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const [savedResumes, setSavedResumes] = useState<{ id: string; name: string; content: string; createdAt: string }[]>([]);
+  const [savedResumes, setSavedResumes] = useState<Array<{ id: string; name: string; content: string; parsedData?: ResumeData | null; createdAt: string }>>([]);
   const [selectedSavedResumeId, setSelectedSavedResumeId] = useState<string>('new');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -127,6 +128,12 @@ const ResumeUpload = () => {
       const saved = savedResumes.find(r => r.id === selectedSavedResumeId);
       if (!saved) {
         toast({ title: 'Error', description: 'Saved resume not found.', variant: 'destructive' });
+        return;
+      }
+      // Use parsedData if available to skip re-parsing
+      if (saved.parsedData) {
+        localStorage.setItem('optimizationRequest', JSON.stringify({ resumeData: saved.parsedData, jobDescription, fileName: saved.name }));
+        router.push('/dashboard/optimize/loading');
         return;
       }
       text = saved.content;

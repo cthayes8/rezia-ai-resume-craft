@@ -72,7 +72,7 @@ const LoadingScreen = () => {
           </div>
 
           <div className="mt-8 text-center text-sm text-gray-500">
-            This typically takes less than a minute
+            This typically takes less a minute or two
           </div>
         </div>
       </div>

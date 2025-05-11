@@ -29,7 +29,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0">
               <img 
-                src="/Rezia_Logo (1).png" 
+                src="/Rezia_Logo_long.png" 
                 alt="Rezia" 
                 className="h-10 w-auto" 
               />

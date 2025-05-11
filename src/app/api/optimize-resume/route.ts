@@ -11,7 +11,11 @@ import type { ResumeData, ExtractJDInfoResponse, ParseResumeResponse, MapKeyword
 export const runtime = 'nodejs';
 
 interface OptimizeResumeRequest {
-  resumeText: string;
+  resumeText?: string;
+  /**
+   * Optional parsed resume data to skip parsing step
+   */
+  resumeData?: ResumeData;
   jobDescription: string;
   templateId?: string;
   fileName?: string;
@@ -22,9 +26,9 @@ interface OptimizeResumeRequest {
  */
 export async function POST(req: Request) {
   try {
-    const { resumeText, jobDescription, templateId, fileName } = (await req.json()) as OptimizeResumeRequest;
-    if (!resumeText || !jobDescription) {
-      return NextResponse.json({ error: 'Missing resumeText or jobDescription' }, { status: 400 });
+    const { resumeText, resumeData, jobDescription, templateId, fileName } = (await req.json()) as OptimizeResumeRequest;
+    if (!jobDescription || (!resumeText && !resumeData)) {
+      return NextResponse.json({ error: 'Missing resumeData or resumeText, and jobDescription' }, { status: 400 });
     }
 
     // Authenticate user
@@ -44,17 +48,39 @@ export async function POST(req: Request) {
       update: { email, fullName },
     });
 
-    // Save resume file metadata
-    const originalTextHash = createHash('sha256').update(resumeText).digest('hex');
-    const resumeFile = await prisma.resumeFile.create({
-      data: { userId, fileName: fileName || '', filePath: '', originalTextHash },
-    });
-
-    // Construct base URL for Pages API fetches
+    // Prepare baseUrl for API calls
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
     const host = req.headers.get('host');
     const baseUrl = `${protocol}://${host}`;
-    // 1. Extract JD info via Pages API
+    // Always save resume file metadata so we have a file record
+    const rawText = resumeText ?? '';
+    const normalizedText = rawText.replace(/\s+/g, ' ').trim();
+    const originalTextHash = createHash('sha256').update(normalizedText).digest('hex');
+    const resumeFile = await prisma.resumeFile.create({
+      data: { userId, fileName: fileName || '', filePath: '', originalTextHash },
+    });
+    
+    // Determine parsed resume: prefer provided resumeData, else cached or LLM parse
+    let parsedResume: ResumeData;
+    if (resumeData) {
+      parsedResume = resumeData;
+    } else {
+      // Try to load cached parsedData
+      const saved = await prisma.savedResume.findFirst({ where: { userId, textHash: originalTextHash } });
+      if (saved?.parsedData) {
+        parsedResume = saved.parsedData as ResumeData;
+      } else {
+        const parseRes = await fetch(`${baseUrl}/api/parse-resume`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ resume: resumeText, jobDescription }),
+        });
+        if (!parseRes.ok) throw new Error('parse-resume failed');
+        parsedResume = (await parseRes.json()).parsedResume as ResumeData;
+      }
+    }
+
+    // 1. Extract JD info via Pages API (baseUrl defined earlier)
     const jdRes = await fetch(`${baseUrl}/api/extract-jd-info`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -63,18 +89,13 @@ export async function POST(req: Request) {
     if (!jdRes.ok) throw new Error('extract-jd-info failed');
     const { keywords, targetTitle, targetCompany, requirements } = (await jdRes.json()) as ExtractJDInfoResponse;
 
-    // 2. Parse resume via Pages API (with caching)
-    const parseRes = await fetch(`${baseUrl}/api/parse-resume`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ resume: resumeText, jobDescription }),
-    });
-    if (!parseRes.ok) throw new Error('parse-resume failed');
-    const { parsedResume } = (await parseRes.json()) as ParseResumeResponse;
     // Deep-clone to preserve the original parsed resume before mutation
     const originalParsedResume: ResumeData = JSON.parse(JSON.stringify(parsedResume));
     // Work on a separate copy for updates
-    let updated: ResumeData = JSON.parse(JSON.stringify(parsedResume));
+    const updated: ResumeData = JSON.parse(JSON.stringify(parsedResume));
+    // Ensure certifications and awards from parsed resume persist into optimized version
+    updated.certifications = parsedResume.certifications || [];
+    updated.awards = parsedResume.awards || [];
 
     // 3. Map keywords via Pages API
     const mapRes = await fetch(`${baseUrl}/api/map-keywords`, {
@@ -210,6 +231,9 @@ export async function POST(req: Request) {
       const { rewrittenProjects } = (await projRes.json()) as { rewrittenProjects: any[] };
       updated.projects = rewrittenProjects;
     }
+    // Ensure certifications & awards flow through to optimized resume
+    updated.certifications = parsedResume.certifications || [];
+    updated.awards = parsedResume.awards || [];
     // 8. Persist optimization run
     const runData: OptimizationRunData = {
       userId,
@@ -231,11 +255,15 @@ export async function POST(req: Request) {
     };
     const run = await prisma.optimizationRun.create({ data: runData as any });
 
-    // Return full result
+    // Return full result, ensuring certifications & awards are included
     return NextResponse.json({
       runId: run.id,
       originalResume: originalParsedResume,
-      optimizedResume: updated,
+      optimizedResume: {
+        ...updated,
+        certifications: parsedResume.certifications || [],
+        awards: parsedResume.awards || [],
+      },
       keywords,
       requirements,
       targetTitle,

@@ -8,7 +8,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Download, ToggleLeft, ToggleRight } from "lucide-react";
+import { Download, ToggleLeft, ToggleRight, FileText, Loader2 } from "lucide-react";
+import { useEditor, EditorContent } from '@tiptap/react';
+import { tiptapExtensions } from '@/lib/tiptap';
+import { parseEditorJSON } from '@/lib/resumeParser';
+import { resumeDataToHTML } from '@/lib/resumeSerializer';
 import { useToast } from "@/components/ui/use-toast";
 
 type ResumeTemplate = "professional" | "modern" | "creative";
@@ -28,6 +32,43 @@ const ResumeViewer = () => {
   const [showOriginal, setShowOriginal] = useState(false);
   const [optimizationResults, setOptimizationResults] = useState<OptimizationResults | null>(null);
   const [editedResume, setEditedResume] = useState<any>(null);
+  // Initialize TipTap editor with serialized resume HTML
+  const editor = useEditor({
+    extensions: tiptapExtensions,
+    content: editedResume ? resumeDataToHTML(editedResume) : '',
+    editable: !showOriginal,
+  });
+  // Two-way binding: update editedResume JSON on editor updates
+  useEffect(() => {
+    if (!editor) return;
+    const handleUpdate = () => {
+      const pmJSON = editor.getJSON();
+      const newData = parseEditorJSON(pmJSON);
+      setEditedResume(newData);
+      // Persist updated resume to localStorage
+      const stored = localStorage.getItem('optimizationResults');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        parsed.optimizedResume = newData;
+        localStorage.setItem('optimizationResults', JSON.stringify(parsed));
+      }
+    };
+    editor.on('update', handleUpdate);
+    return () => editor.off('update', handleUpdate);
+  }, [editor]);
+
+  // Load content once on mount and when toggling original/optimized
+  useEffect(() => {
+    if (!editor || !optimizationResults) return;
+    const data = showOriginal
+      ? optimizationResults.originalResume
+      : optimizationResults.optimizedResume;
+    const html = resumeDataToHTML(data);
+    editor.commands.setContent(html, false);
+  }, [editor, showOriginal, optimizationResults]);
+  // Cover letter state
+  const [coverLetterUrl, setCoverLetterUrl] = useState<string | null>(null);
+  const [isGeneratingCover, setIsGeneratingCover] = useState(false);
   const { toast } = useToast();
   // Determine template CSS class name matching public/templates.css
   const displayTemplateClass =
@@ -46,6 +87,19 @@ const ResumeViewer = () => {
       setEditedResume(parsed.optimizedResume);
     }
   }, []);
+  // Fetch any existing cover letter for this run
+  useEffect(() => {
+    if (!optimizationResults) return;
+    fetch(`/api/cover-letters?runId=${optimizationResults.runId}`)
+      .then((res) => {
+        if (!res.ok) throw new Error('Not found');
+        return res.json();
+      })
+      .then(() => setCoverLetterUrl(`/api/cover-letters/download?runId=${optimizationResults.runId}`))
+      .catch(() => {
+        /* no existing cover letter */
+      });
+  }, [optimizationResults]);
 
   const handleDownload = async () => {
     if (!optimizationResults) return;
@@ -60,10 +114,12 @@ const ResumeViewer = () => {
       ? optimizationResults.originalResume
       : editedResume;
     try {
-    const response = await fetch('/api/generate-docx', {
+    // Export using HTML-to-DOCX for true WYSIWYG fidelity
+    const html = `<div class=\"${displayTemplateClass}\">${editor?.getHTML()}</div>`;
+    const response = await fetch('/api/generate-docx-html', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ resumeData: payloadData, templateId }),
+      body: JSON.stringify({ html }),
     });
       if (!response.ok) {
         const errorText = await response.text();
@@ -89,6 +145,31 @@ const ResumeViewer = () => {
         description: 'Download failed. Please try again.',
         variant: 'destructive',
       });
+    }
+  };
+  // Generate or download cover letter
+  const handleGenerateCoverLetter = async () => {
+    if (!optimizationResults) return;
+    setIsGeneratingCover(true);
+    try {
+      const res = await fetch('/api/generate-cover-letter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ runId: optimizationResults.runId }),
+      });
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || 'Failed to generate cover letter');
+      }
+      await res.json();
+      // Set download endpoint for the newly created cover letter
+      setCoverLetterUrl(`/api/cover-letters/download?runId=${optimizationResults.runId}`);
+      toast({ title: 'Cover letter ready', description: 'Your cover letter is available for download.' });
+    } catch (error: any) {
+      console.error('Cover letter error:', error);
+      toast({ title: 'Error', description: error.message || 'Generation failed.', variant: 'destructive' });
+    } finally {
+      setIsGeneratingCover(false);
     }
   };
   // Edit contact fields (email, phone, link)
@@ -538,19 +619,49 @@ const ResumeViewer = () => {
               </SelectContent>
             </Select>
           )}
-          
-          <Button 
+          <Button
             className="bg-rezia-blue hover:bg-rezia-blue/90 flex items-center gap-2"
             onClick={handleDownload}
           >
             <Download className="h-4 w-4" />
             <span>Download</span>
           </Button>
+          {!showOriginal && (
+            coverLetterUrl ? (
+              <Button
+                variant="outline"
+                className="flex items-center gap-2"
+                onClick={() => window.open(coverLetterUrl, '_blank')}
+              >
+                <FileText className="h-4 w-4" />
+                <span>Download Cover Letter</span>
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                className="flex items-center gap-2"
+                onClick={handleGenerateCoverLetter}
+                disabled={isGeneratingCover}
+              >
+                {isGeneratingCover ? (
+                  <Loader2 className="animate-spin h-4 w-4" />
+                ) : (
+                  <FileText className="h-4 w-4" />
+                )}
+                <span>{isGeneratingCover ? 'Generating...' : 'Get Cover Letter'}</span>
+              </Button>
+            )
+          )}
         </div>
       </div>
       
       <div className={displayTemplateClass}>
-        {renderResumeContent()}
+        {/* Replace static resume with TipTap editor */}
+        {editor ? (
+          <EditorContent editor={editor} />
+        ) : (
+          <div>Loading editor...</div>
+        )}
       </div>
     </div>
   </>

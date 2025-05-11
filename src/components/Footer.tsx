@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-1">
             <img 
-              src="/Rezia_Logo (1).png" 
+              src="/Rezia_Logo_long.png" 
               alt="Rezia Logo" 
               className="h-10 w-auto mb-4" 
             />

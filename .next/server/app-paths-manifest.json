@@ -1,1 +1,3 @@
-{}
+{
+  "/api/optimize-resume/route": "app/api/optimize-resume/route.js"
+}
