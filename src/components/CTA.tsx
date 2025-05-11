@@ -16,9 +16,6 @@ const CTA = () => {
             <Button asChild className="bg-white text-rezia-blue hover:bg-white/90 text-lg h-12 px-8">
               <Link href="/sign-up">Start Optimizing for Free</Link>
             </Button>
-            <Button asChild variant="outline" className="border-white text-white hover:bg-white/10 text-lg h-12 px-8">
-              <Link href="/sign-up">View Pricing</Link>
-            </Button>
           </div>
         </div>
       </div>

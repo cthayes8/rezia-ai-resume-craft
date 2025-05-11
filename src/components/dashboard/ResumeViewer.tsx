@@ -114,16 +114,16 @@ const ResumeViewer = () => {
       ? optimizationResults.originalResume
       : editedResume;
     try {
-    // Export using HTML-to-DOCX for true WYSIWYG fidelity
-    const html = `<div class=\"${displayTemplateClass}\">${editor?.getHTML()}</div>`;
-    const response = await fetch('/api/generate-docx-html', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ html }),
-    });
+      // Use the editor’s HTML output for exact WYSIWYG fidelity
+      const html = editor ? editor.getHTML() : resumeDataToHTML(payloadData);
+      const response = await fetch('/api/generate-docx-html', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ html, templateId }),
+      });
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText || 'Failed to generate PDF');
+        throw new Error(errorText || 'Failed to generate DOCX');
       }
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);

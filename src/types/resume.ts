@@ -1,7 +1,10 @@
 export interface Contact {
   email: string;
   phone?: string;
-  link?: string;
+  /**
+   * URLs to contact: e.g. personal website, LinkedIn, etc.
+   */
+  links?: string[];
 }
 
 export interface WorkExperience {
@@ -78,7 +81,6 @@ export interface BulletRewriteResult {
 }
 
 export interface ExtractJDInfoResponse {
-  keywords: string[];
   targetTitle: string;
   targetCompany: string;
   requirements: string[];

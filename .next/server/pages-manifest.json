@@ -2,15 +2,7 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
+  "/": "pages/index.js",
   "/dashboard/optimize/loading": "pages/dashboard/optimize/loading.js",
-  "/dashboard/optimize/results": "pages/dashboard/optimize/results.js",
-  "/dashboard": "pages/dashboard.js",
-  "/api/extract-jd-info": "pages/api/extract-jd-info.js",
-  "/api/rewrite-bullet": "pages/api/rewrite-bullet.js",
-  "/api/map-keywords": "pages/api/map-keywords.js",
-  "/api/generate-docx-html": "pages/api/generate-docx-html.js",
-  "/api/rewrite-summary": "pages/api/rewrite-summary.js",
-  "/api/rewrite-skills": "pages/api/rewrite-skills.js",
-  "/api/cover-letters": "pages/api/cover-letters.js",
-  "/api/generate-cover-letter": "pages/api/generate-cover-letter.js"
+  "/dashboard/optimize/results": "pages/dashboard/optimize/results.js"
 }

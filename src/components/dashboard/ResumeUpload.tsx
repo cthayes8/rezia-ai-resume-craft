@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 // Use mammoth to extract text from .docx files
 import * as mammoth from 'mammoth';
+// PDF parsing moved to server via /api/pdf-to-text
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -102,12 +103,29 @@ const ResumeUpload = () => {
       }
       // Extract text
       try {
-        if (file.name.toLowerCase().endsWith('.docx')) {
-          const buf = await file.arrayBuffer();
-          // @ts-ignore
-          text = (await mammoth.extractRawText({ arrayBuffer: buf })).value;
-        } else {
-          text = await file.text();
+      if (file.name.toLowerCase().endsWith('.docx')) {
+        const buf = await file.arrayBuffer();
+        // @ts-ignore mammoth types might be missing
+        text = (await mammoth.extractRawText({ arrayBuffer: buf })).value;
+      } else if (file.name.toLowerCase().endsWith('.pdf')) {
+        // Send PDF to server API for text extraction
+        const arrayBuffer = await file.arrayBuffer();
+        const binary = new Uint8Array(arrayBuffer);
+        let binaryString = '';
+        for (let i = 0; i < binary.length; i++) {
+          binaryString += String.fromCharCode(binary[i]);
+        }
+        const base64 = btoa(binaryString);
+        const res = await fetch('/api/pdf-to-text', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pdfBase64: base64 }),
+        });
+        if (!res.ok) throw new Error('PDF parsing failed');
+        const data = await res.json();
+        text = data.text;
+      } else {
+        text = await file.text();
         }
       } catch {
         text = await file.text();
@@ -165,6 +183,23 @@ const ResumeUpload = () => {
           console.warn('[ResumeUpload] mammoth extraction failed, falling back to raw text', err);
           resumeText = await file.text();
         }
+      } else if (file.name.toLowerCase().endsWith('.pdf')) {
+        // Send PDF to server API for text extraction
+        const arrayBuffer = await file.arrayBuffer();
+        const binary = new Uint8Array(arrayBuffer);
+        let binaryString = '';
+        for (let i = 0; i < binary.length; i++) {
+          binaryString += String.fromCharCode(binary[i]);
+        }
+        const base64 = btoa(binaryString);
+        const res = await fetch('/api/pdf-to-text', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pdfBase64: base64 }),
+        });
+        if (!res.ok) throw new Error('PDF parsing failed');
+        const data = await res.json();
+        resumeText = data.text;
       } else {
         resumeText = await file.text();
       }

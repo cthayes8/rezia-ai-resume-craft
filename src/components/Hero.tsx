@@ -1,6 +1,6 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
+import TrustedAvatarGroup from "@/components/TrustedAvatarGroup";
 
 const Hero = () => {
   return (
@@ -10,25 +10,20 @@ const Hero = () => {
         <div className="flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 md:pr-10 mb-12 md:mb-0 animate-fade-in">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              <span className="text-gradient">AI-Powered</span> Resume Optimization
+            Get 3x More Interviews With an <span className="text-gradient">AI-Optimized Resume</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-700 mb-8 max-w-lg">
-              Get more interviews with a resume perfectly tailored to each job you apply for. Rezia AI analyzes job descriptions and optimizes your resume to match what employers are looking for.
+            Rezia rewrites your resume to match the job—helping you pass ATS scans and land more interviews.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button className="bg-rezia-blue hover:bg-rezia-blue/90 text-lg h-12 px-6">
-                Try for Free
+                Try for Free -{">"} Optimize Now
               </Button>
               <Button variant="outline" className="border-rezia-blue text-rezia-blue hover:bg-rezia-blue/10 text-lg h-12 px-6">
                 Learn More
               </Button>
             </div>
-            <div className="mt-12 hidden md:block">
-              <a href="#how-it-works" className="inline-flex items-center text-gray-500 hover:text-rezia-blue transition-colors">
-                <span className="mr-2">See how it works</span>
-                <ArrowDown className="h-4 w-4 animate-bounce" />
-              </a>
-            </div>
+            <TrustedAvatarGroup className="mt-4" />
           </div>
           <div className="md:w-1/2 relative animate-fade-in" style={{animationDelay: '0.3s'}}>
             <div className="relative bg-white rounded-2xl shadow-lg p-4 border border-gray-100 z-10">

@@ -87,7 +87,15 @@ export async function POST(req: Request) {
       body: JSON.stringify({ jobDescription }),
     });
     if (!jdRes.ok) throw new Error('extract-jd-info failed');
-    const { keywords, targetTitle, targetCompany, requirements } = (await jdRes.json()) as ExtractJDInfoResponse;
+    const { targetTitle, targetCompany, requirements } = (await jdRes.json()) as ExtractJDInfoResponse;
+    // Extract skills/keywords separately
+    const ekRes = await fetch(`${baseUrl}/api/extract-keywords`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jobDescription }),
+    });
+    if (!ekRes.ok) throw new Error('extract-keywords failed');
+    const { keywords } = (await ekRes.json()) as { keywords: string[] };
 
     // Deep-clone to preserve the original parsed resume before mutation
     const originalParsedResume: ResumeData = JSON.parse(JSON.stringify(parsedResume));
@@ -154,6 +162,26 @@ export async function POST(req: Request) {
         if (firstWord) usedVerbs.push(firstWord.toLowerCase());
       });
     }
+    // 5. Rewrite projects if present
+    if (updated.projects && updated.projects.length) {
+      const projRes = await fetch(`${baseUrl}/api/rewrite-projects`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projects: updated.projects,
+          keywords,
+          requirements,
+          targetTitle,
+          targetCompany,
+          jobDescription,
+          skills: updated.skills,
+          summary: updated.summary || parsedResume.summary,
+        }),
+      });
+      if (!projRes.ok) throw new Error('rewrite-projects failed');
+      const { rewrittenProjects } = await projRes.json() as { rewrittenProjects: typeof updated.projects };
+      updated.projects = rewrittenProjects;
+    }
 
     // 5. Rewrite summary
     // 5. Rewrite summary via Pages API
@@ -178,6 +206,7 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         originalSummary: parsedResume.summary,
         optimizedBullets: updated.work.flatMap((w) => w.bullets),
+        projects: updated.projects || [],
         skills: updated.skills,
         targetTitle,
         targetCompany,

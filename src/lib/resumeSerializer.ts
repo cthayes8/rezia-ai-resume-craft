@@ -17,24 +17,29 @@ export function resumeDataToHTML(resume: ResumeData): string {
 
   let html = '';
   // Name and contact
-  html += `<h1>${escapeHTML(resume.name)}</h1>`;
+  html += `<h1 style="margin:0;">${escapeHTML(resume.name)}</h1>`;
   const contacts: string[] = [];
-  if (resume.contact.email) contacts.push(escapeHTML(resume.contact.email));
-  if (resume.contact.link)
-    contacts.push(
-      `<a href=\"${escapeHTML(resume.contact.link)}\" target=\"_blank\">${escapeHTML(
-        resume.contact.link
-      )}</a>`
-    );
-  if (resume.contact.phone) contacts.push(escapeHTML(resume.contact.phone));
+  if (resume.contact.email) {
+    contacts.push(escapeHTML(resume.contact.email));
+  }
+  // Multiple links (LinkedIn, personal site, etc.)
+  if (resume.contact.links && Array.isArray(resume.contact.links)) {
+    resume.contact.links.forEach((url) => {
+      const safe = escapeHTML(url);
+      contacts.push(`<a href=\"${safe}\" target=\"_blank\">${safe}</a>`);
+    });
+  }
+  if (resume.contact.phone) {
+    contacts.push(escapeHTML(resume.contact.phone));
+  }
   if (contacts.length) html += `<p>${contacts.join(' | ')}</p>`;
 
   // Summary
-  html += `<h2>Professional Summary</h2><p>${escapeHTML(resume.summary)}</p>`;
+  html += `<h2>PROFESSIONAL SUMMARY</h2><p>${escapeHTML(resume.summary)}</p>`;
 
   // Work Experience
   if (resume.work?.length) {
-    html += '<h2>Work Experience</h2>';
+    html += '<h2>WORK EXPERIENCE</h2>';
     resume.work.forEach((job) => {
       const dates = [job.from, job.to].filter(Boolean).map(escapeHTML).join(' – ');
       html += `<h3>${escapeHTML(job.title)} | ${escapeHTML(job.company)}${
@@ -50,7 +55,7 @@ export function resumeDataToHTML(resume: ResumeData): string {
 
   // Education
   if (resume.education?.length) {
-    html += '<h2>Education</h2>';
+    html += '<h2>EDUCATION</h2>';
     resume.education.forEach((edu) => {
       const dates = [edu.from, edu.to].filter(Boolean).map(escapeHTML).join(' – ');
       html += `<h3>${escapeHTML(edu.degree)} | ${escapeHTML(
@@ -61,14 +66,14 @@ export function resumeDataToHTML(resume: ResumeData): string {
 
   // Skills: comma-separated list
   if (resume.skills?.length) {
-    html += '<h2>Skills & Abilities</h2>';
+    html += '<h2>SKILLS & ABILITIES</h2>';
     const skillsLine = resume.skills.map(escapeHTML).join(', ');
     html += `<p>${skillsLine}</p>`;
   }
 
   // Certifications
   if (resume.certifications?.length) {
-    html += '<h2>Certifications</h2><ul>';
+    html += '<h2>CERTIFICATIONS</h2><ul>';
     resume.certifications.forEach((cert) => {
       if (typeof cert === 'string') {
         html += '<li>' + escapeHTML(cert) + '</li>';
@@ -82,7 +87,7 @@ export function resumeDataToHTML(resume: ResumeData): string {
 
   // Awards
   if (resume.awards?.length) {
-    html += '<h2>Awards & Honors</h2><ul>';
+    html += '<h2>AWARDS & HONORS</h2><ul>';
     resume.awards.forEach((award) => {
       if (typeof award === 'string') {
         html += '<li>' + escapeHTML(award) + '</li>';
@@ -96,7 +101,7 @@ export function resumeDataToHTML(resume: ResumeData): string {
 
   // Projects
   if (resume.projects?.length) {
-    html += '<h2>Projects</h2>';
+    html += '<h2>PROJECTS</h2>';
     resume.projects.forEach((proj) => {
       html += `<h3>${escapeHTML(proj.name)}</h3><p>${escapeHTML(
         proj.description
@@ -116,7 +121,7 @@ export function resumeDataToHTML(resume: ResumeData): string {
 
   // Languages
   if (resume.languages?.length) {
-    html += '<h2>Languages</h2><ul>';
+    html += '<h2>LANGUAGES</h2><ul>';
     resume.languages.forEach((lang) => {
       html += `<li>${escapeHTML(lang)}</li>`;
     });

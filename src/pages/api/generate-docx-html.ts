@@ -22,21 +22,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
   try {
-    const { html } = req.body as { html?: string };
+    const { html, templateId } = req.body as { html?: string; templateId?: number };
     if (!html) {
       return res.status(400).json({ error: 'Missing HTML content' });
     }
-    // Wrap HTML with template CSS for accurate styling
+    // Determine body class based on templateId (1=classic, 2=modern, 3=tech)
+    const templateClass =
+      templateId === 2 ? 'template-modern' :
+      templateId === 3 ? 'template-tech' :
+      'template-classic';
+    // Wrap HTML with template CSS and class for accurate styling
     const fullHtml = `<!doctype html>
 <html>
 <head>
 <meta charset="utf-8"/>
 <style>${templateCss}</style>
 </head>
-<body>${html}</body>
+<body class="${templateClass}">${html}</body>
 </html>`;
-    // Convert HTML to ArrayBuffer for .docx
-    const buffer = await htmlToDocx(fullHtml, null, {
+    // Inline all critical CSS so Word sees the exact styles
+    const { default: inlineCss } = await import('inline-css');
+    const inlinedHtml = await inlineCss(fullHtml, {
+      url: ' ',                 // base URL for resolving relative paths
+      applyStyleTags: true,     // apply <style> blocks inline
+      removeStyleTags: true,    // remove the <style> blocks after inlining
+      applyLinkTags: true,      // apply <link rel="stylesheet"> if present
+    });
+    // Convert inlined HTML to ArrayBuffer for .docx
+    const buffer = await htmlToDocx(inlinedHtml, null, {
       table: { row: { cantSplit: true } },
       footer: true,
       pageNumber: false,

@@ -18,8 +18,7 @@ You are a job description parsing assistant. Extract key information for tailori
 {
   "targetTitle": string,
   "targetCompany": string,
-  "requirements": [string],
-  "keywords": [string]
+  "requirements": [string]
 }
 `.trim();
     const completion = await openai.chat.completions.create({
@@ -33,11 +32,11 @@ You are a job description parsing assistant. Extract key information for tailori
     let content = completion.choices[0]?.message?.content || '';
     content = content.replace(/```json\s*|```/g, '').trim();
     const data = JSON.parse(content);
-    const { targetTitle, targetCompany, requirements, keywords } = data;
-    if (typeof targetTitle !== 'string' || typeof targetCompany !== 'string' || !Array.isArray(requirements) || !Array.isArray(keywords)) {
+    const { targetTitle, targetCompany, requirements } = data;
+    if (typeof targetTitle !== 'string' || typeof targetCompany !== 'string' || !Array.isArray(requirements)) {
       throw new Error('Unexpected response format');
     }
-    return res.status(200).json({ targetTitle, targetCompany, requirements, keywords });
+    return res.status(200).json({ targetTitle, targetCompany, requirements });
   } catch (err: any) {
     console.error('Error in pages/api/extract-jd-info:', err);
     return res.status(500).json({ error: err.message || 'Internal error' });

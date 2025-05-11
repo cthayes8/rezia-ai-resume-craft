@@ -1,3 +1,4 @@
+"use client";
 
 import {
   Accordion,
@@ -9,45 +10,69 @@ import {
 const faqs = [
   {
     question: "How does Rezia optimize my resume?",
-    answer: "Rezia uses AI to analyze your resume against the job description, identifying missing keywords and skills. It then suggests specific improvements to increase your match rate with the employer's requirements and helps you bypass Applicant Tracking Systems (ATS)."
+    answer:
+      "Rezia reads your resume the way recruiters and ATS systems do. It identifies missing keywords, rewrites your bullets, and boosts the content so it better matches the job you're applying for—helping you land more interviews.",
   },
   {
-    question: "Is my resume data secure?",
-    answer: "Yes, your data security is our priority. We use bank-level encryption to protect your information, and we never share your resume data with third parties. You can request deletion of your data at any time."
-  },
-  {
-    question: "Can I use Rezia for multiple job applications?",
-    answer: "Absolutely! Rezia is designed to help you customize your resume for each job application. We recommend creating a tailored version for every position you apply to for the best results."
+    question: "What do I get for free?",
+    answer:
+      "You get one full resume optimization, including personalized keyword matching, bullet rewrites, and formatting improvements. No signup or credit card required. It's the perfect way to try Rezia before upgrading.",
   },
   {
     question: "How much does Rezia cost?",
-    answer: "Rezia offers a free tier that allows for basic resume optimization. For advanced features and unlimited optimizations, we offer premium plans starting at $9.99/month. You can view all our pricing options on our pricing page."
+    answer:
+      "After your free resume optimization, you can upgrade to Rezia Pro for $29.99/month. This includes unlimited resume optimizations, job-specific rewrites, and AI-generated cover letters.",
+  },
+  {
+    question: "Does Rezia also generate cover letters?",
+    answer:
+      "Yes. Rezia Pro includes one-click cover letter generation tailored to your optimized resume and the job description—written in your tone, instantly.",
+  },
+  {
+    question: "Can I use Rezia for multiple job applications?",
+    answer:
+      "Absolutely. Rezia is designed to optimize your resume for each job you apply to. Pro users can create unlimited resume versions, each one tailored to a different opportunity.",
+  },
+  {
+    question: "Is my resume data secure?",
+    answer:
+      "Yes. We use bank-level encryption to protect your resume data. Your information is never shared with third parties, and you can request deletion at any time.",
   },
   {
     question: "Can Rezia help with career transitions?",
-    answer: "Yes! Rezia is especially helpful for career changers. It identifies transferable skills in your background that match the new role and suggests how to highlight them effectively on your resume."
+    answer:
+      "Definitely. Rezia is great for career changers. It helps surface transferable skills, reframes your experience for new roles, and writes language that resonates with hiring managers in your target industry.",
   },
   {
     question: "Does Rezia work with all resume formats?",
-    answer: "Rezia supports all common resume formats including PDF, Word (.doc, .docx), and plain text files. Our system can analyze and optimize resumes regardless of their original format."
-  }
+    answer:
+      "Yes. We support PDF, Word (.doc and .docx), and plain text files. No matter how your resume starts, we'll help you upgrade it.",
+  },
 ];
 
 const FAQ = () => {
   return (
-    <section id="faq" className="py-20">
+    <section id="faq" className="py-20 bg-white">
       <div className="container mx-auto px-4">
+        {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Frequently Asked Questions</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Frequently Asked Questions
+          </h2>
           <p className="text-lg text-gray-700">
-            Get answers to common questions about Rezia's resume optimization service.
+            Everything you need to know about using Rezia to upgrade your resume.
           </p>
         </div>
 
+        {/* Accordion */}
         <div className="max-w-3xl mx-auto">
           <Accordion type="single" collapsible className="w-full">
             {faqs.map((faq, index) => (
-              <AccordionItem key={index} value={`item-${index}`} className="border-b border-gray-200">
+              <AccordionItem
+                key={index}
+                value={`item-${index}`}
+                className="border-b border-gray-200"
+              >
                 <AccordionTrigger className="text-left font-medium py-4">
                   {faq.question}
                 </AccordionTrigger>
@@ -59,9 +84,15 @@ const FAQ = () => {
           </Accordion>
         </div>
 
+        {/* Support CTA */}
         <div className="mt-16 text-center">
           <p className="text-gray-600 mb-2">Still have questions?</p>
-          <a href="#" className="text-rezia-blue font-medium hover:underline">Contact our support team</a>
+          <a
+            href="#"
+            className="text-rezia-blue font-medium hover:underline"
+          >
+            Contact our support team
+          </a>
         </div>
       </div>
     </section>

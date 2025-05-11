@@ -82,6 +82,12 @@ Rules:
     if (!parsed) throw new Error('No response from LLM.');
 
     const parsedJson: ResumeData = JSON.parse(parsed);
+    // Normalize contact links: support multiple links including LinkedIn or personal site
+    if ((parsedJson.contact as any).link) {
+      const single = (parsedJson.contact as any).link as string;
+      parsedJson.contact.links = [single];
+      delete (parsedJson.contact as any).link;
+    }
     parsedCache.set(hash, parsedJson);
 
     return res.status(200).json({ parsedResume: parsedJson });

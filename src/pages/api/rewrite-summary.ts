@@ -14,6 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const {
     originalSummary,
     optimizedBullets,
+    projects,
     skills,
     targetTitle,
     targetCompany,
@@ -24,6 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } = req.body as {
     originalSummary?: string;
     optimizedBullets?: string[];
+    projects?: { name: string; description: string }[];
     skills?: string[];
     targetTitle?: string;
     targetCompany?: string;
@@ -41,7 +43,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     !Array.isArray(requirements) ||
     !Array.isArray(keywords) ||
     typeof jobDescription !== 'string' ||
-    (experienceSnapshot !== undefined && typeof experienceSnapshot !== 'string')
+    (experienceSnapshot !== undefined && typeof experienceSnapshot !== 'string') ||
+    (projects !== undefined && !Array.isArray(projects))
   ) {
     return res.status(400).json({ error: 'Invalid request payload' });
   }
@@ -63,6 +66,10 @@ Guidelines:
 - Do NOT fabricate experience or exaggerate impact
 - Return only the rewritten summary — no labels, no headers, no quotes, no extra formatting
 `.trim();
+    // Construct user prompt, including optimized projects if any
+    const projectsSection = projects && projects.length
+      ? `OPTIMIZED PROJECTS:\n${projects.map(p => `- ${p.name}: ${p.description}`).join('\n')}\n\n`
+      : '';
     const userPrompt = `
 ORIGINAL SUMMARY:
 ${originalSummary}
@@ -81,7 +88,7 @@ ${experienceSnapshot}
 OPTIMIZED BULLETS:
 ${optimizedBullets.join('\n')}
 
-FULL JOB DESCRIPTION:
+${projectsSection}FULL JOB DESCRIPTION:
 ${jobDescription}
 `.trim();
     const completion = await openai.chat.completions.create({

@@ -1,24 +1,29 @@
-
 import { FileText, CheckCircle, Star } from "lucide-react";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 
 const features = [
   {
     icon: <FileText className="h-10 w-10 text-rezia-blue" />,
-    title: "Smart Resume Analysis",
+    title: "Analyze Your Resume",
     description:
-      "Our AI analyzes your resume against job descriptions to identify missing keywords, skills, and experiences that matter most to employers.",
+      "AI scans for missing keywords, skills, and job matches instantly.",
   },
   {
     icon: <Star className="h-10 w-10 text-rezia-blue" />,
-    title: "ATS Keyword Optimization",
+    title: "Boost Your ATS Score",
     description:
-      "Beat the Applicant Tracking Systems by automatically optimizing your resume with the exact keywords and phrases needed to get past the first screening.",
+      "Match exact phrases needed to pass the first screening.",
   },
   {
     icon: <CheckCircle className="h-10 w-10 text-rezia-blue" />,
-    title: "Personalized Suggestions",
+    title: "Rewrite Like a Recruiter",
     description:
-      "Receive tailored recommendations to strengthen your resume's impact with job-specific language that resonates with hiring managers.",
+      "Get language that resonates with hiring managers — instantly.",
   },
 ];
 
@@ -27,7 +32,10 @@ const Features = () => {
     <section id="features" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <div className="inline-block rounded-full bg-rezia-blue px-4 py-1.5 text-xs font-semibold text-white mb-4">
+            Features
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-2">
             Intelligent Resume Optimization
           </h2>
           <p className="text-lg text-gray-700">
@@ -35,12 +43,29 @@ const Features = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="block md:hidden">
+          <Accordion type="single" collapsible>
+            {features.map((feature, index) => (
+              <AccordionItem key={index} value={`feature-${index}`}>
+                <AccordionTrigger>
+                  <div className="flex items-center gap-3">
+                    {feature.icon}
+                    <span className="text-base font-semibold">{feature.title}</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-gray-600">{feature.description}</p>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+        <div className="hidden md:grid md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <div 
-              key={index} 
-              className="feature-card animate-fade-in" 
-              style={{animationDelay: `${index * 0.2}s`}}
+            <div
+              key={index}
+              className="feature-card animate-fade-in transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-xl bg-white rounded-lg p-6"
+              style={{ animationDelay: `${index * 0.2}s` }}
             >
               <div className="mb-5">{feature.icon}</div>
               <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>

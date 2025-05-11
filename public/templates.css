@@ -1,5 +1,3 @@
-/* templates.css — Three true 10/10 resume templates */
-
 @page {
   size: letter;
   margin: 0.75in;
@@ -24,26 +22,31 @@ body.template-classic, .template-classic {
 
 .template-classic h1 {
   font-size: 28px;
-  margin-bottom: 4px;
+  font-weight: bold;
+  margin: 0 0 4px;
 }
+
 .template-classic .contact {
   font-size: 11px;
   color: #444;
   margin-bottom: 24px;
 }
+
 .template-classic h2 {
   font-size: 14px;
   text-transform: uppercase;
-  border-bottom: 1px solid #ccc;
-  margin-top: 32px;
-  padding-bottom: 6px;
+  margin-top: 36px;
+  margin-bottom: 12px;
   letter-spacing: 1px;
+  font-weight: bold;
 }
+
 .template-classic h3 {
   font-size: 13px;
   font-weight: 600;
   margin: 12px 0 4px;
 }
+
 .template-classic .job-entry {
   margin-bottom: 24px;
 }
@@ -59,30 +62,35 @@ body.template-modern, .template-modern {
 .template-modern h1 {
   font-size: 30px;
   font-weight: 700;
-  margin-bottom: 4px;
+  margin: 0 0 4px;
 }
+
 .template-modern .contact {
   font-size: 12px;
   color: #555;
   margin-bottom: 24px;
 }
+
 .template-modern h2 {
   font-size: 14px;
   text-transform: uppercase;
-  border-left: 4px solid #3B82F6;
-  padding-left: 12px;
-  color: #3B82F6;
-  margin-top: 32px;
+  margin-top: 36px;
   margin-bottom: 12px;
+  color: #3B82F6;
+  font-weight: 600;
+  letter-spacing: 0.8px;
 }
+
 .template-modern h3 {
   font-size: 13px;
   font-weight: 600;
   margin: 12px 0 4px;
 }
+
 .template-modern .job-entry {
   margin-bottom: 24px;
 }
+
 .template-modern ul {
   padding-left: 20px;
 }
@@ -98,60 +106,62 @@ body.template-tech, .template-tech {
 
 .template-tech h1 {
   font-size: 28px;
-  margin-bottom: 4px;
+  font-weight: bold;
+  margin: 0 0 4px;
 }
+
 .template-tech .contact {
   font-size: 11.5px;
   color: #444;
   margin-bottom: 20px;
 }
+
 .template-tech h2 {
   font-size: 13px;
   text-transform: uppercase;
-  border-bottom: 2px solid #3B82F6;
+  margin-top: 36px;
+  margin-bottom: 12px;
   color: #3B82F6;
-  margin-top: 32px;
-  padding-bottom: 6px;
-  letter-spacing: 0.8px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
 }
+
 .template-tech h3 {
   font-size: 12.5px;
-  margin-top: 10px;
   font-weight: bold;
+  margin: 10px 0 4px;
 }
+
 .template-tech .job-entry {
   margin-bottom: 20px;
 }
+
 .template-tech ul {
   padding-left: 18px;
   margin-top: 4px;
 }
 
-/* Utility classes */
+/* === Universal Utility Classes === */
 .job-entry {
-  /* Prevent splitting a job entry across PDF pages */
-  -webkit-column-break-inside: avoid;
-  -webkit-page-break-inside: avoid;
   break-inside: avoid;
   page-break-inside: avoid;
 }
-/* Prevent headings from being orphaned at bottom of a page */
+
 .template-classic h2,
 .template-modern h2,
 .template-tech h2 {
   page-break-after: avoid;
 }
-/* Prevent a page break after the entire Summary section */
+
+/* Prevent a page break after summary */
 .template-classic > section:first-of-type,
 .template-modern > section:first-of-type,
 .template-tech > section:first-of-type {
-  /* Prevent splitting summary and subsequent sections */
-  -webkit-column-break-inside: avoid;
-  -webkit-page-break-inside: avoid;
   break-inside: avoid;
   page-break-inside: avoid;
   page-break-after: avoid;
 }
+
 .skills-list span {
   background: #efefef;
   padding: 4px 8px;
@@ -160,4 +170,16 @@ body.template-tech, .template-tech {
   margin-bottom: 6px;
   display: inline-block;
   font-size: 11px;
+}
+
+.template-classic p,
+.template-modern p,
+.template-tech p {
+  margin: 0 0 12px;
+}
+
+.template-classic ul,
+.template-modern ul,
+.template-tech ul {
+  margin: 0 0 12px;
 }

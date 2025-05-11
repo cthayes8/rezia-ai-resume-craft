@@ -16,7 +16,7 @@ function getText(node: any): string {
 export function parseEditorJSON(pmJSON: any): ResumeData {
   const resume: ResumeData = {
     name: '',
-    contact: { email: '', phone: undefined, link: undefined },
+    contact: { email: '', phone: undefined, links: [] },
     summary: '',
     skills: [],
     work: [],
@@ -34,14 +34,20 @@ export function parseEditorJSON(pmJSON: any): ResumeData {
       resume.name = getText(node);
       continue;
     }
-    // First paragraph as contact line
+    // First paragraph as contact line: parse email, phone, and any URLs
     if (node.type === 'paragraph' && resume.name && !resume.contact.email) {
       const text = getText(node);
       const parts = text.split(' | ');
       parts.forEach(part => {
-        if (part.includes('@')) resume.contact.email = part;
-        else if (/^https?:\/\//.test(part)) resume.contact.link = part;
-        else if (/\d/.test(part)) resume.contact.phone = part;
+        const trimmed = part.trim();
+        if (trimmed.includes('@') && !resume.contact.email) {
+          resume.contact.email = trimmed;
+        } else if (/^https?:\/\//.test(trimmed)) {
+          resume.contact.links = resume.contact.links || [];
+          resume.contact.links.push(trimmed);
+        } else if (/\d/.test(trimmed) && !resume.contact.phone) {
+          resume.contact.phone = trimmed;
+        }
       });
       continue;
     }

@@ -26,6 +26,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!content || typeof content !== 'string') {
       return res.status(400).json({ error: 'Missing content' });
     }
+    // Remove any null bytes from PDF-extracted text
+    const cleanContent = content.replace(/\u0000/g, '');
     try {
       // Enforce limit
       const count = await prisma.savedResume.count({ where: { userId } });
@@ -34,23 +36,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       // Compute text hash for caching
       const crypto = await import('crypto');
-      const normalized = content.replace(/\s+/g, ' ').trim();
+      const normalized = cleanContent.replace(/\s+/g, ' ').trim();
       const textHash = crypto.createHash('sha256').update(normalized).digest('hex');
       // Parse resume via LLM API to get structured data
       const protocol = req.headers['x-forwarded-proto'] || 'http';
       const host = req.headers.host;
+      // Parse resume via LLM API to get structured data
       const parseRes = await fetch(`${protocol}://${host}/api/parse-resume`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resume: content }),
+        body: JSON.stringify({ resume: cleanContent }),
       });
       if (!parseRes.ok) {
         throw new Error('Failed to parse resume for caching');
       }
       const { parsedResume } = await parseRes.json();
       // Persist saved resume with parsed data
+      // Persist saved resume with sanitized content
       const saved = await prisma.savedResume.create({
-        data: { userId, name: name || `Resume ${count + 1}`, content, textHash, parsedData: parsedResume }
+        data: { userId, name: name || `Resume ${count + 1}`, content: cleanContent, textHash, parsedData: parsedResume }
       });
       return res.status(201).json(saved);
     } catch (err: any) {

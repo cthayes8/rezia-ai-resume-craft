@@ -94,8 +94,25 @@ const SavedResumesPage = () => {
     try {
       if (file.name.toLowerCase().endsWith('.docx')) {
         const buf = await file.arrayBuffer();
-        // @ts-ignore
+        // @ts-ignore mammoth types might be missing
         text = (await mammoth.extractRawText({ arrayBuffer: buf })).value;
+      } else if (file.name.toLowerCase().endsWith('.pdf')) {
+        // Extract text via server-side PDF-to-text API
+        const arrayBuffer = await file.arrayBuffer();
+        const binary = new Uint8Array(arrayBuffer);
+        let binaryString = '';
+        for (let i = 0; i < binary.length; i++) {
+          binaryString += String.fromCharCode(binary[i]);
+        }
+        const base64 = btoa(binaryString);
+        const resText = await fetch('/api/pdf-to-text', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pdfBase64: base64 }),
+        });
+        if (!resText.ok) throw new Error('PDF text extraction failed');
+        const json = await resText.json();
+        text = json.text;
       } else {
         text = await file.text();
       }

@@ -1,4 +1,3 @@
-
 import { ArrowRight } from "lucide-react";
 
 const steps = [
@@ -27,6 +26,9 @@ const HowItWorks = () => {
     <section id="how-it-works" className="py-20">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="inline-block rounded-full bg-rezia-blue px-4 py-1.5 text-xs font-semibold text-white mb-4">
+            How it works
+          </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-6">How Rezia Works</h2>
           <p className="text-lg text-gray-700">
             Optimizing your resume with Rezia is simple and takes just minutes. Follow these three easy steps to create job-specific resumes that get results.
