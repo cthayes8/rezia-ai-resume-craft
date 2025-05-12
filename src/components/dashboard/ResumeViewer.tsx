@@ -10,10 +10,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Download, ToggleLeft, ToggleRight, FileText, Loader2 } from "lucide-react";
 import { useEditor, EditorContent } from '@tiptap/react';
+import { SimpleToolbar } from '@/components/editor/SimpleToolbar';
 import { tiptapExtensions } from '@/lib/tiptap';
 import { parseEditorJSON } from '@/lib/resumeParser';
 import { resumeDataToHTML } from '@/lib/resumeSerializer';
 import { useToast } from "@/components/ui/use-toast";
+import { Protect } from '@clerk/nextjs';
 
 type ResumeTemplate = "professional" | "modern" | "creative";
 
@@ -157,6 +159,15 @@ const ResumeViewer = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ runId: optimizationResults.runId }),
       });
+      // Handle plan gating for cover letter
+      if (res.status === 402) {
+        toast({
+          title: 'Upgrade to Premium',
+          description: 'Upgrade to Premium to generate cover letters.',
+        });
+        setIsGeneratingCover(false);
+        return;
+      }
       if (!res.ok) {
         const errorText = await res.text();
         throw new Error(errorText || 'Failed to generate cover letter');
@@ -584,86 +595,97 @@ const ResumeViewer = () => {
       <Head>
         <link rel="stylesheet" href="/templates.css" />
       </Head>
-      <div className="w-full max-w-4xl mx-auto p-6">
-      <div className="flex flex-col lg:flex-row justify-between items-center mb-6 gap-4">
-        <div className="flex items-center">
-          <h1 className="text-2xl font-bold text-gray-800 mr-6">Your Resume</h1>
-          <button 
-            className="flex items-center text-sm text-gray-600 hover:text-rezia-blue transition-colors"
-            onClick={toggleResume}
-          >
-            {showOriginal ? (
-              <>
-                <ToggleRight className="h-5 w-5 mr-1" />
-                <span>Showing Original</span>
-              </>
-            ) : (
-              <>
-                <ToggleLeft className="h-5 w-5 mr-1" />
-                <span>Showing Optimized</span>
-              </>
-            )}
-          </button>
-        </div>
-        
-        <div className="flex items-center gap-4">
-          {!showOriginal && (
-            <Select value={template} onValueChange={(value) => setTemplate(value as ResumeTemplate)}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select template" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="professional">Professional</SelectItem>
-                <SelectItem value="modern">Modern</SelectItem>
-                <SelectItem value="creative">Creative</SelectItem>
-              </SelectContent>
-            </Select>
-          )}
-          <Button
-            className="bg-rezia-blue hover:bg-rezia-blue/90 flex items-center gap-2"
-            onClick={handleDownload}
-          >
-            <Download className="h-4 w-4" />
-            <span>Download</span>
-          </Button>
-          {!showOriginal && (
-            coverLetterUrl ? (
-              <Button
-                variant="outline"
-                className="flex items-center gap-2"
-                onClick={() => window.open(coverLetterUrl, '_blank')}
+      {/* Centered paper container */}
+      <div className="flex justify-center py-8">
+        <div className="w-full max-w-4xl">
+          {/* Non-document controls above the paper */}
+          <div className="flex flex-col lg:flex-row justify-between items-center mb-6 gap-4">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-gray-800 mr-6">Your Resume</h1>
+              <button
+                className="flex items-center text-sm text-gray-600 hover:text-rezia-blue transition-colors"
+                onClick={toggleResume}
               >
-                <FileText className="h-4 w-4" />
-                <span>Download Cover Letter</span>
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                className="flex items-center gap-2"
-                onClick={handleGenerateCoverLetter}
-                disabled={isGeneratingCover}
-              >
-                {isGeneratingCover ? (
-                  <Loader2 className="animate-spin h-4 w-4" />
+                {showOriginal ? (
+                  <>
+                    <ToggleRight className="h-5 w-5 mr-1" />
+                    <span>Showing Original</span>
+                  </>
                 ) : (
-                  <FileText className="h-4 w-4" />
+                  <>
+                    <ToggleLeft className="h-5 w-5 mr-1" />
+                    <span>Showing Optimized</span>
+                  </>
                 )}
-                <span>{isGeneratingCover ? 'Generating...' : 'Get Cover Letter'}</span>
+              </button>
+            </div>
+            <div className="flex items-center gap-4">
+              {!showOriginal && (
+                <Select value={template} onValueChange={(value) => setTemplate(value as ResumeTemplate)}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select template" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="professional">Professional</SelectItem>
+                    <SelectItem value="modern">Modern</SelectItem>
+                    <SelectItem value="creative">Creative</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+              <Button
+                className="bg-rezia-blue hover:bg-rezia-blue/90 flex items-center gap-2"
+                onClick={handleDownload}
+              >
+                <Download className="h-4 w-4" />
+                <span>Download</span>
               </Button>
-            )
-          )}
+              {!showOriginal && (
+                <Protect plan="rezia_premium" fallback={null}>
+                  {coverLetterUrl ? (
+                    <Button
+                      variant="outline"
+                      className="flex items-center gap-2"
+                      onClick={() => window.open(coverLetterUrl, '_blank')}
+                    >
+                      <FileText className="h-4 w-4" />
+                      <span>Download Cover Letter</span>
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      className="flex items-center gap-2"
+                      onClick={handleGenerateCoverLetter}
+                      disabled={isGeneratingCover}
+                    >
+                      {isGeneratingCover ? (
+                        <Loader2 className="animate-spin h-4 w-4" />
+                      ) : (
+                        <FileText className="h-4 w-4" />
+                      )}
+                      <span>{isGeneratingCover ? 'Generating...' : 'Get Cover Letter'}</span>
+                    </Button>
+                  )}
+                </Protect>
+              )}
+            </div>
+          </div>
+          {/* Paper wrapper */}
+          <div className="relative bg-white shadow-lg rounded-lg overflow-hidden">
+            {/* Floating toolbar */}
+            <div className="sticky top-0 z-10 bg-white border-b border-gray-200">
+              <SimpleToolbar editor={editor} />
+            </div>
+            {/* Document content using classic fonts */}
+            <div className={`p-6 font-serif leading-relaxed ${displayTemplateClass}`}>
+              {editor ? (
+                <EditorContent editor={editor} />
+              ) : (
+                <div>Loading editor...</div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-      
-      <div className={displayTemplateClass}>
-        {/* Replace static resume with TipTap editor */}
-        {editor ? (
-          <EditorContent editor={editor} />
-        ) : (
-          <div>Loading editor...</div>
-        )}
-      </div>
-    </div>
   </>
   );
 };

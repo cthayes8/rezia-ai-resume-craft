@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { FileText, Eye, Trash2 } from "lucide-react";
+import { useAuth } from '@clerk/nextjs';
 
 type ResumeHistoryItem = {
   id: string;
@@ -14,6 +15,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const HistoryPage = () => {
+  const { isLoaded, has } = useAuth();
+  const isFreeUser = isLoaded && has({ plan: 'free_user' });
   const router = useRouter();
   const [historyItems, setHistoryItems] = useState<ResumeHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -141,15 +144,17 @@ const HistoryPage = () => {
                         <Eye className="h-4 w-4" />
                         <span className="hidden sm:inline">View</span>
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex items-center gap-1 text-xs h-8 text-red-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50"
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        <span className="hidden sm:inline">Delete</span>
-                      </Button>
+                      {!isFreeUser && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center gap-1 text-xs h-8 text-red-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="hidden sm:inline">Delete</span>
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -166,9 +171,9 @@ const HistoryPage = () => {
           <div className="bg-gray-100 p-3 rounded-full inline-flex mx-auto mb-4">
             <FileText className="h-8 w-8 text-gray-500" />
           </div>
-          <h3 className="text-xl font-medium text-gray-700">No resumes yet</h3>
+          <h3 className="text-xl font-medium text-gray-700">No optimizations run yet</h3>
           <p className="text-gray-500 mt-1 mb-6">
-            You haven't optimized any resumes yet
+            Optimize a resume to see your history
           </p>
           <Button
             className="bg-rezia-blue hover:bg-rezia-blue/90"

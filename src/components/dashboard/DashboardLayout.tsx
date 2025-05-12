@@ -13,7 +13,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   // Fallback to empty if no user
   const fullName = user?.fullName || user?.firstName || "";
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-100">
       <div className="flex min-h-screen">
         <DashboardSidebar />
         <div className="flex-1">

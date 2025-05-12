@@ -23,7 +23,15 @@ export function ResumeOptimizer() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resumeText, jobDescription }),
       });
-
+      // Handle quota or other errors
+      if (!response.ok) {
+        if (response.status === 402) {
+          setError('You’ve reached your free-tier limit. Please upgrade to continue optimizing.');
+          return;
+        }
+        const errText = await response.text();
+        throw new Error(errText || 'Failed to optimize resume');
+      }
       const reader = response.body?.getReader();
       if (!reader) throw new Error('No reader available');
 

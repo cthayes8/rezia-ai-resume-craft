@@ -203,14 +203,6 @@ const SavedResumesPage = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex items-center gap-1 text-xs h-8"
-                    onClick={() => handleUse(item.id)}
-                  >
-                    Use
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
                     className="flex items-center gap-1 text-xs h-8 text-red-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50"
                     onClick={() => handleDelete(item.id)}
                   >

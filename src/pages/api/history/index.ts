@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     // Fetch user's optimization runs, most recent first
     const runs = await prisma.optimizationRun.findMany({
-      where: { userId },
+      where: { userId, deletedAt: null },
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,

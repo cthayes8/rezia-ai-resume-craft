@@ -31,22 +31,31 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing resumeData or resumeText, and jobDescription' }, { status: 400 });
     }
 
-    // Authenticate user
-    const session = await auth();
-    const userId = session.userId;
+    // Authenticate user & enforce free-tier quota
+    const { userId, has } = await auth();
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    // Ensure user record
-    const clerkUser = await (await clerkClient()).users.getUser(userId);
+    // Ensure user record and fetch free run credits
+    const client = await clerkClient();
+    const clerkUser = await client.users.getUser(userId);
     const email = clerkUser.emailAddresses[0]?.emailAddress || '';
     const fullName = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim();
-    await prisma.user.upsert({
+    const dbUser = await prisma.user.upsert({
       where: { id: userId },
       create: { id: userId, email, fullName },
       update: { email, fullName },
     });
+
+    // Enforce free-tier quota using freeRunsRemaining
+    if (has({ plan: 'free_user' })) {
+      if (dbUser.freeRunsRemaining <= 0) {
+        return NextResponse.json(
+          { error: 'Free tier quota exhausted', needUpgrade: true },
+          { status: 402 }
+        );
+      }
+    }
 
     // Prepare baseUrl for API calls
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
@@ -282,7 +291,20 @@ export async function POST(req: Request) {
       tokenCount: 0,
       costUsd: 0,
     };
-    const run = await prisma.optimizationRun.create({ data: runData as any });
+    // Persist optimization run, decrementing free run credit atomically for free users
+    let run;
+    if (has({ plan: 'free_user' })) {
+      const [, newRun] = await prisma.$transaction([
+        prisma.user.update({
+          where: { id: userId },
+          data: { freeRunsRemaining: { decrement: 1 } }
+        }),
+        prisma.optimizationRun.create({ data: runData as any })
+      ]);
+      run = newRun;
+    } else {
+      run = await prisma.optimizationRun.create({ data: runData as any });
+    }
 
     // Return full result, ensuring certifications & awards are included
     return NextResponse.json({

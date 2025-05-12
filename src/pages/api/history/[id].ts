@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (method === 'GET') {
     try {
       const run = await prisma.optimizationRun.findFirst({
-        where: { id: runId, userId }
+        where: { id: runId, userId, deletedAt: null }
       });
       if (!run) {
         return res.status(404).json({ error: 'Not found' });
@@ -45,8 +45,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } else if (method === 'DELETE') {
     try {
-      const result = await prisma.optimizationRun.deleteMany({
-        where: { id: runId, userId }
+      const result = await prisma.optimizationRun.updateMany({
+        where: { id: runId, userId, deletedAt: null },
+        data: { deletedAt: new Date() }
       });
       if (result.count === 0) {
         return res.status(404).json({ error: 'Not found' });

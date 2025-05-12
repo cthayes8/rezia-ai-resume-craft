@@ -1,12 +1,14 @@
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import ResumeUpload from "@/components/dashboard/ResumeUpload";
+"use client";
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
-const Dashboard = () => {
-  return (
-    <DashboardLayout>
-      <ResumeUpload />
-    </DashboardLayout>
-  );
-};
-
-export default Dashboard; 
+/**
+ * Dashboard landing: redirect to Optimize page
+ */
+export default function DashboardHome() {
+  const router = useRouter();
+  useEffect(() => {
+    router.replace('/dashboard/optimize');
+  }, [router]);
+  return null;
+}

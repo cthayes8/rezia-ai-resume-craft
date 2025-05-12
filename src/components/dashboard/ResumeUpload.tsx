@@ -19,11 +19,14 @@ const ResumeUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [savedResumes, setSavedResumes] = useState<Array<{ id: string; name: string; content: string; parsedData?: ResumeData | null; createdAt: string }>>([]);
   const [selectedSavedResumeId, setSelectedSavedResumeId] = useState<string>('new');
+  // For new uploads: parsed plain text of resume
+  const [parsedText, setParsedText] = useState<string | null>(null);
+  const [isParsing, setIsParsing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   // If linked from Saved page with a resume to use, pre-select it
   useEffect(() => {
-    const { useSavedResumeId } = router.query;
+    const { useSavedResumeId } = router.query || {};
     if (typeof useSavedResumeId === 'string') {
       setSelectedSavedResumeId(useSavedResumeId);
     }
@@ -65,20 +68,69 @@ const ResumeUpload = () => {
     setProgress
   } = useResumeStore();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      if (selectedFile.type === "application/pdf" || 
-          selectedFile.type === "application/msword" || 
-          selectedFile.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-        setFile(selectedFile);
-      } else {
-        toast({
-          title: "Invalid file type",
-          description: "Please upload a PDF or Word document.",
-          variant: "destructive",
+    if (!selectedFile) return;
+    const validTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    if (!validTypes.includes(selectedFile.type)) {
+      toast({
+        title: 'Invalid file type',
+        description: 'Please upload a PDF or Word document.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setFile(selectedFile);
+    // Parse the resume text immediately upon selection
+    setIsParsing(true);
+    let text: string;
+    try {
+      if (selectedFile.name.toLowerCase().endsWith('.docx')) {
+        const buf = await selectedFile.arrayBuffer();
+        // @ts-ignore mammoth types might be missing
+        text = (await mammoth.extractRawText({ arrayBuffer: buf })).value;
+      } else if (selectedFile.name.toLowerCase().endsWith('.pdf')) {
+        const arrayBuffer = await selectedFile.arrayBuffer();
+        const binary = new Uint8Array(arrayBuffer);
+        let binaryString = '';
+        for (let i = 0; i < binary.length; i++) {
+          binaryString += String.fromCharCode(binary[i]);
+        }
+        const base64 = btoa(binaryString);
+        const res = await fetch('/api/pdf-to-text', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pdfBase64: base64 }),
         });
+        if (!res.ok) throw new Error('PDF parsing failed');
+        const data = await res.json();
+        text = data.text;
+      } else {
+        text = await selectedFile.text();
       }
+      setParsedText(text);
+      // Optionally save resume for reuse
+      try {
+        const saveRes = await fetch('/api/saved-resumes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: selectedFile.name, content: text })
+        });
+        if (saveRes.ok) loadSavedResumes();
+      } catch (err) {
+        console.warn('Save resume failed', err);
+      }
+    } catch (err) {
+      console.warn('Error extracting resume text:', err);
+      // Fallback to raw text
+      text = await selectedFile.text();
+      setParsedText(text);
+    } finally {
+      setIsParsing(false);
     }
   };
 
@@ -95,61 +147,31 @@ const ResumeUpload = () => {
     // Determine source: saved or new upload
     const useNew = selectedSavedResumeId === 'new';
     let text: string;
-    let name: string | undefined;
+    let name: string;
     if (useNew) {
+      // New upload: ensure file and parsed text ready
       if (!file) {
         toast({ title: 'No file', description: 'Upload a resume file.', variant: 'destructive' });
         return;
       }
-      // Extract text
-      try {
-      if (file.name.toLowerCase().endsWith('.docx')) {
-        const buf = await file.arrayBuffer();
-        // @ts-ignore mammoth types might be missing
-        text = (await mammoth.extractRawText({ arrayBuffer: buf })).value;
-      } else if (file.name.toLowerCase().endsWith('.pdf')) {
-        // Send PDF to server API for text extraction
-        const arrayBuffer = await file.arrayBuffer();
-        const binary = new Uint8Array(arrayBuffer);
-        let binaryString = '';
-        for (let i = 0; i < binary.length; i++) {
-          binaryString += String.fromCharCode(binary[i]);
-        }
-        const base64 = btoa(binaryString);
-        const res = await fetch('/api/pdf-to-text', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pdfBase64: base64 }),
-        });
-        if (!res.ok) throw new Error('PDF parsing failed');
-        const data = await res.json();
-        text = data.text;
-      } else {
-        text = await file.text();
-        }
-      } catch {
-        text = await file.text();
+      if (isParsing) {
+        toast({ title: 'Processing', description: 'Still parsing your resume, please wait.', variant: 'destructive' });
+        return;
       }
+      if (!parsedText) {
+        toast({ title: 'Error', description: 'Could not parse resume text.', variant: 'destructive' });
+        return;
+      }
+      text = parsedText;
       name = file.name;
-      // Save resume if under limit
-      try {
-        const res = await fetch('/api/saved-resumes', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, content: text })
-        });
-        if (res.ok) loadSavedResumes();
-      } catch (err) {
-        console.warn('Save resume failed', err);
-      }
     } else {
       const saved = savedResumes.find(r => r.id === selectedSavedResumeId);
       if (!saved) {
         toast({ title: 'Error', description: 'Saved resume not found.', variant: 'destructive' });
         return;
       }
-      // Use parsedData if available to skip re-parsing
       if (saved.parsedData) {
+        setStoreJobDescription(jobDescription);
         localStorage.setItem('optimizationRequest', JSON.stringify({ resumeData: saved.parsedData, jobDescription, fileName: saved.name }));
         router.push('/dashboard/optimize/loading');
         return;
@@ -157,87 +179,12 @@ const ResumeUpload = () => {
       text = saved.content;
       name = saved.name;
     }
-    // Kick off optimization: save request and go to loading page
+    // Kick off optimization: save request and go to loading screen
     setStoreJobDescription(jobDescription);
-    // Persist request data for loading page
-    localStorage.setItem(
-      'optimizationRequest',
-      JSON.stringify({ resumeText: text, jobDescription, fileName: name })
-    );
+    localStorage.setItem('optimizationRequest', JSON.stringify({ resumeText: text, jobDescription, fileName: name }));
     router.push('/dashboard/optimize/loading');
   };
 
-  const handleUpload = async (file: File) => {
-    try {
-      setLoading(true);
-      // Extract text from uploaded file (use mammoth for .docx)
-      // Extract text from uploaded file (use mammoth for .docx based on filename)
-      let resumeText: string;
-      if (file.name.toLowerCase().endsWith('.docx')) {
-        try {
-          const arrayBuffer = await file.arrayBuffer();
-          // @ts-ignore mammoth types might be missing
-          const { value } = await mammoth.extractRawText({ arrayBuffer });
-          resumeText = value;
-        } catch (err) {
-          console.warn('[ResumeUpload] mammoth extraction failed, falling back to raw text', err);
-          resumeText = await file.text();
-        }
-      } else if (file.name.toLowerCase().endsWith('.pdf')) {
-        // Send PDF to server API for text extraction
-        const arrayBuffer = await file.arrayBuffer();
-        const binary = new Uint8Array(arrayBuffer);
-        let binaryString = '';
-        for (let i = 0; i < binary.length; i++) {
-          binaryString += String.fromCharCode(binary[i]);
-        }
-        const base64 = btoa(binaryString);
-        const res = await fetch('/api/pdf-to-text', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pdfBase64: base64 }),
-        });
-        if (!res.ok) throw new Error('PDF parsing failed');
-        const data = await res.json();
-        resumeText = data.text;
-      } else {
-        resumeText = await file.text();
-      }
-      
-      // Call the optimize-resume API
-      const response = await fetch('/api/optimize-resume', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          resumeText,
-          jobDescription,
-          fileName: file.name,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to optimize resume');
-      }
-
-      const data = await response.json();
-      
-      // Store the optimization results in localStorage
-      localStorage.setItem('optimizationResults', JSON.stringify(data));
-      
-      // Navigate to loading page
-      router.push("/dashboard/optimize/loading");
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to optimize resume. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="w-full max-w-3xl mx-auto p-6">
@@ -309,12 +256,12 @@ const ResumeUpload = () => {
           </p>
         </div>
         
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           className="w-full bg-rezia-blue hover:bg-rezia-blue/90"
-          disabled={isUploading}
+          disabled={isParsing}
         >
-          {isUploading ? "Optimizing..." : "Optimize Resume"}
+          {isParsing ? 'Parsing resume...' : 'Optimize Resume'}
         </Button>
       </form>
     </div>

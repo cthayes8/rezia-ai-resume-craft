@@ -18,7 +18,8 @@ const loadingTips = [
   'Tip: Use past tense for previous roles and present tense for current roles.',
   'Did you know? A concise one-page resume often outperforms longer formats.'
 ];
-const ESTIMATED_DURATION = 6; // seconds for countdown display
+// Estimated duration in seconds for countdown display (reflects full optimize time)
+const ESTIMATED_DURATION = 40;
 
 const LoadingPage = () => {
   const router = useRouter();

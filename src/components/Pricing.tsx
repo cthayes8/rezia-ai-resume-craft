@@ -1,4 +1,25 @@
+"use client";
+import { useEffect } from "react";
+import { PricingTable } from "@clerk/nextjs";
+import { Badge } from "@/components/ui/badge";
+
 const Pricing = () => {
+  useEffect(() => {
+    // Wait for Clerk PricingTable to render
+    const interval = setInterval(() => {
+      const premiumCard = document.querySelector('.cl-pricingTableCard__rezia_premium');
+      if (premiumCard && !premiumCard.querySelector('.rezia-premium-badge')) {
+        const badge = document.createElement('div');
+        badge.className = 'rezia-premium-badge';
+        badge.innerText = '🔥 Most Popular';
+        premiumCard.prepend(badge);
+        clearInterval(interval);
+      }
+    }, 100);
+    // Clean up
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section id="pricing" className="py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -9,67 +30,37 @@ const Pricing = () => {
             Start free. Upgrade when you're ready to optimize every resume and cover letter.
           </p>
         </div>
-
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {/* Free Plan */}
-          <div className="border border-gray-200 rounded-xl p-8 shadow-sm bg-gray-50 transition-all duration-300 hover:scale-105 hover:shadow-md hover:-translate-y-1">
-            <h3 className="text-xl font-semibold mb-2">Free</h3>
-            <p className="text-gray-600 mb-6">One-time resume optimization to try Rezia.</p>
-            <ul className="space-y-3 text-sm text-gray-700 mb-6">
-              <li>✅ 1 resume optimization</li>
-              <li>✅ Keyword analysis</li>
-              <li>✅ AI-powered bullet rewrites</li>
-              <li>🚫 No cover letter generation</li>
-              <li>🚫 No resume re-optimization</li>
-            </ul>
-            <p className="text-3xl font-bold text-gray-800">Free</p>
-            <a
-              href="#try"
-              className="inline-block mt-4 bg-rezia-blue text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-rezia-blue/90 transition"
-            >
-              Get Started
-            </a>
-          </div>
-
-          {/* Starter Plan */}
-          <div className="border-2 border-rezia-blue rounded-xl p-8 shadow-md bg-white transition-all duration-300 hover:scale-105 hover:shadow-lg hover:-translate-y-1">
-            <h3 className="text-xl font-semibold mb-2 text-rezia-blue">Starter</h3>
-            <p className="text-gray-600 mb-6">Unlimited resume optimization and tailored rewrites.</p>
-            <ul className="space-y-3 text-sm text-gray-700 mb-6">
-              <li>✅ Unlimited resume optimizations</li>
-              <li>✅ Tailored rewrites for each job</li>
-              <li>✅ .docx export for easy editing</li>
-              <li>🚫 No cover letter generation</li>
-              <li>🚫 No priority support</li>
-            </ul>
-            <p className="text-3xl font-bold text-rezia-blue mb-4">$29.99<span className="text-base font-medium text-gray-500">/month</span></p>
-            <a
-              href="#try"
-              className="inline-block bg-rezia-blue text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-rezia-blue/90 transition"
-            >
-              Try Rezia Starter
-            </a>
-          </div>
-
-          {/* Pro Plan */}
-          <div className="border-2 border-yellow-500 rounded-xl p-8 shadow-md bg-white transition-all duration-300 hover:scale-105 hover:shadow-lg hover:-translate-y-1">
-            <h3 className="text-xl font-semibold mb-2 text-yellow-600">Pro</h3>
-            <p className="text-gray-600 mb-6">Everything in Starter, plus cover letter generation and priority support.</p>
-            <ul className="space-y-3 text-sm text-gray-700 mb-6">
-              <li>✅ Unlimited resume optimizations</li>
-              <li>✅ Tailored rewrites for each job</li>
-              <li>✅ .docx export for easy editing</li>
-              <li>✅ Cover letter generation</li>
-              <li>✅ Priority support</li>
-            </ul>
-            <p className="text-3xl font-bold text-yellow-600 mb-4">$39.99<span className="text-base font-medium text-gray-500">/month</span></p>
-            <a
-              href="#try"
-              className="inline-block bg-yellow-500 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-yellow-600 transition"
-            >
-              Try Rezia Pro
-            </a>
-          </div>
+        <div
+          className="relative w-full"
+          style={{
+            maxWidth: "1200px",
+            margin: "0 auto",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <Badge
+            className="absolute left-1/2 -translate-x-1/2 -top-5 z-20 bg-amber-400 text-amber-900 font-bold text-sm px-4 py-1 rounded-full shadow-lg border-2 border-white"
+            style={{ pointerEvents: "none" }}
+          >
+            <span role="img" aria-label="fire">🔥</span> Most Popular
+          </Badge>
+          <PricingTable
+            appearance={{
+              elements: {
+                rootBox: "flex flex-col md:flex-row justify-center gap-8 w-full",
+                card: "w-full min-w-0 max-w-full md:min-w-[320px] md:max-w-[350px] flex-1",
+                "card__rezia_premium": "shadow-2xl border-2 border-purple-500 scale-105 z-10",
+                "card__rezia_standard": "shadow-md border border-gray-300",
+                "button__rezia_premium": "bg-purple-600 hover:bg-purple-700 text-white font-bold",
+                "button__rezia_standard": "bg-gray-200 text-gray-700 font-semibold",
+                "button__free_user": "bg-gray-100 text-gray-400 font-semibold",
+              },
+              variables: {
+                colorPrimary: "#5e5fee",
+              }
+            }}
+          />
         </div>
       </div>
     </section>

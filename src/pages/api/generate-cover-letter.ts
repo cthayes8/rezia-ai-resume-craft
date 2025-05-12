@@ -13,6 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.setHeader('Allow', ['POST']);
     return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
+  // Authenticate via Clerk on Pages API
   const { userId } = getAuth(req);
   if (!userId) {
     return res.status(401).json({ error: 'Unauthorized' });

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getAuth } from '@clerk/nextjs/server';
+import { getAuth, clerkClient } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 
 // GET: list saved resumes; POST: save a new resume (max 3)
@@ -7,6 +7,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { userId } = getAuth(req);
   if (!userId) {
     return res.status(401).json({ error: 'Unauthorized' });
+  }
+  // Ensure the user exists in our database
+  try {
+    // Initialize Clerk backend client and fetch user data
+    const client = await clerkClient();
+    const userRecord = await client.users.getUser(userId);
+    const email = userRecord.emailAddresses[0]?.emailAddress || '';
+    const fullName = `${userRecord.firstName || ''} ${userRecord.lastName || ''}`.trim();
+    await prisma.user.upsert({
+      where: { id: userId },
+      create: { id: userId, email, fullName },
+      update: { email, fullName }
+    });
+  } catch (e) {
+    console.error('Error upserting user before saving resume:', e);
+    return res.status(500).json({ error: 'Internal server error' });
   }
   if (req.method === 'GET') {
     try {
