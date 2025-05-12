@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";

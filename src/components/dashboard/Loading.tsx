@@ -1,6 +1,6 @@
 import { Progress } from "@/components/ui/progress";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from 'next/navigation';
 
 const LoadingScreen = () => {
   const [progress, setProgress] = useState(0);

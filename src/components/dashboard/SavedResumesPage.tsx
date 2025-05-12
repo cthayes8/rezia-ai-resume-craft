@@ -7,7 +7,7 @@ import * as mammoth from 'mammoth';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { FileText, Trash2, Upload } from 'lucide-react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 // Saved resume with cached parsedData
 type SavedResume = {

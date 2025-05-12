@@ -11,7 +11,7 @@ type ResumeHistoryItem = {
 };
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 const HistoryPage = () => {
   const router = useRouter();
