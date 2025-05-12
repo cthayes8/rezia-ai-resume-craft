@@ -3,6 +3,6 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
-  "/dashboard/optimize/loading": "pages/dashboard/optimize/loading.js",
-  "/dashboard/optimize/results": "pages/dashboard/optimize/results.js"
+  "/dashboard/optimize/results": "pages/dashboard/optimize/results.js",
+  "/dashboard/optimize/loading": "pages/dashboard/optimize/loading.js"
 }
