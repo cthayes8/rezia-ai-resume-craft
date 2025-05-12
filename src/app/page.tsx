@@ -1,5 +1,5 @@
-import IndexPage from '../pages/index';
+import IndexPage from '../pages';
 
-        export default function Page() {
-          return <IndexPage />;
-        }
+export default function Page() {
+  return <IndexPage />;
+}
