@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 
 const Pricing = () => {
   useEffect(() => {
-    // Wait for Clerk PricingTable to render
+    // Wait for Clerk PricingTable to render premium badge
     const interval = setInterval(() => {
       const premiumCard = document.querySelector('.cl-pricingTableCard__rezia_premium');
       if (premiumCard && !premiumCard.querySelector('.rezia-premium-badge')) {
@@ -16,9 +16,9 @@ const Pricing = () => {
         clearInterval(interval);
       }
     }, 100);
-    // Clean up
     return () => clearInterval(interval);
   }, []);
+  
 
   return (
     <section id="pricing" className="py-20 bg-white">
@@ -55,6 +55,7 @@ const Pricing = () => {
                 "button__rezia_premium": "bg-purple-600 hover:bg-purple-700 text-white font-bold",
                 "button__rezia_standard": "bg-gray-200 text-gray-700 font-semibold",
                 "button__free_user": "bg-gray-100 text-gray-400 font-semibold",
+                "card__free_user": "hidden",
               },
               variables: {
                 colorPrimary: "#5e5fee",

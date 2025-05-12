@@ -16,17 +16,17 @@ const faqs = [
   {
     question: "What do I get for free?",
     answer:
-      "You get one full resume optimization, including personalized keyword matching, bullet rewrites, and formatting improvements. No signup or credit card required. It's the perfect way to try Rezia before upgrading.",
+      "You get one full resume optimization, including personalized keyword matching, bullet rewrites, and formatting improvements. No credit card required. It's the perfect way to try Rezia before upgrading.",
   },
   {
     question: "How much does Rezia cost?",
     answer:
-      "After your free resume optimization, you can upgrade to Rezia Pro for $29.99/month. This includes unlimited resume optimizations, job-specific rewrites, and AI-generated cover letters.",
+      "After your free resume optimization, you can upgrade to Rezia Standardfor $29.99/month. This includes unlimited resume optimizations, job-specific rewrites, and document downloads.",
   },
   {
     question: "Does Rezia also generate cover letters?",
     answer:
-      "Yes. Rezia Pro includes one-click cover letter generation tailored to your optimized resume and the job description—written in your tone, instantly.",
+      "Yes. Rezia Premium includes one-click cover letter generation tailored to your optimized resume and the job description—written in your tone, instantly.",
   },
   {
     question: "Can I use Rezia for multiple job applications?",
@@ -46,7 +46,7 @@ const faqs = [
   {
     question: "Does Rezia work with all resume formats?",
     answer:
-      "Yes. We support PDF, Word (.doc and .docx), and plain text files. No matter how your resume starts, we'll help you upgrade it.",
+      "Yes. We support Word (.doc and .docx) and PDF files. No matter how your resume starts, we'll help you upgrade it.",
   },
 ];
 

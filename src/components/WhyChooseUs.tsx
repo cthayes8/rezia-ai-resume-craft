@@ -75,7 +75,7 @@ const WhyChooseUs = () => (
           asChild
           className="bg-rezia-blue hover:bg-rezia-blue/90 text-white font-semibold px-6 py-3 rounded-lg shadow transition"
         >
-          <a href="#try">Try Rezia Free → Optimize Your Resume</a>
+          <a href="/sign-up">Try Rezia Free → Optimize Your Resume</a>
         </Button>
       </div>
     </div>

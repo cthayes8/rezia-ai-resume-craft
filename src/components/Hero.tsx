@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Link from 'next/link';
 import { ArrowDown } from "lucide-react";
 import TrustedAvatarGroup from "@/components/TrustedAvatarGroup";
 
@@ -16,9 +17,11 @@ const Hero = () => {
             Rezia rewrites your resume to match the job—helping you pass ATS scans and land more interviews.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button className="bg-rezia-blue hover:bg-rezia-blue/90 text-lg h-12 px-6">
-                Try for Free -{">"} Optimize Now
-              </Button>
+              <Link href="/sign-up">
+                <Button className="bg-rezia-blue hover:bg-rezia-blue/90 text-lg h-12 px-6">
+                  Try for Free -{">"} Optimize Now
+                </Button>
+              </Link>
               <Button variant="outline" className="border-rezia-blue text-rezia-blue hover:bg-rezia-blue/10 text-lg h-12 px-6">
                 Learn More
               </Button>

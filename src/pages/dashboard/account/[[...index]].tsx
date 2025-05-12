@@ -15,10 +15,14 @@ export default function DashboardAccount() {
   return (
     <DashboardLayout>
       <div className="w-full max-w-screen-lg mx-auto">
-        <UserProfile
-          routing="path"
-          appearance={{ elements: { rootBox: "w-full" } }}
-        />
+      <UserProfile
+        routing="path"
+        appearance={{ elements: { rootBox: "w-full" } }}
+      />
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold mb-4">Choose a Plan</h2>
+        <PricingTable />
+      </div>
       </div>
     </DashboardLayout>
   );

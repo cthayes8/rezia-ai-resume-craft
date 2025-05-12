@@ -200,7 +200,7 @@ const Testimonials = () => {
             Want results like these?
           </p>
           <a
-            href="#try"
+            href="/sign-up"
             className="inline-block bg-rezia-blue hover:bg-rezia-blue/90 text-white font-semibold px-6 py-3 rounded-lg shadow transition"
           >
             Try Rezia Free → Optimize Your Resume
