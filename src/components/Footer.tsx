@@ -1,4 +1,5 @@
 import { Mail, Phone } from "lucide-react";
+import Link from "next/link";
 
 const Footer = () => {
   return (
@@ -82,9 +83,15 @@ const Footer = () => {
               © {new Date().getFullYear()} Rezia. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="#" className="text-gray-500 text-sm hover:text-rezia-blue">Privacy Policy</a>
-              <a href="#" className="text-gray-500 text-sm hover:text-rezia-blue">Terms of Service</a>
-              <a href="#" className="text-gray-500 text-sm hover:text-rezia-blue">Cookie Policy</a>
+              <Link href="/legal/privacy-policy" className="text-gray-500 text-sm hover:text-rezia-blue">
+                Privacy Policy
+              </Link>
+              <Link href="/legal/terms-of-use" className="text-gray-500 text-sm hover:text-rezia-blue">
+                Terms of Service
+              </Link>
+              <Link href="/legal/cookie-policy" className="text-gray-500 text-sm hover:text-rezia-blue">
+                Cookie Policy
+              </Link>
             </div>
           </div>
         </div>

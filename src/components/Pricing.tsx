@@ -10,9 +10,9 @@ const Pricing = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {/* Free Plan */}
-          <div className="border border-gray-200 rounded-xl p-8 shadow-sm bg-gray-50">
+          <div className="border border-gray-200 rounded-xl p-8 shadow-sm bg-gray-50 transition-all duration-300 hover:scale-105 hover:shadow-md hover:-translate-y-1">
             <h3 className="text-xl font-semibold mb-2">Free</h3>
             <p className="text-gray-600 mb-6">One-time resume optimization to try Rezia.</p>
             <ul className="space-y-3 text-sm text-gray-700 mb-6">
@@ -31,21 +31,41 @@ const Pricing = () => {
             </a>
           </div>
 
-          {/* Pro Plan */}
-          <div className="border-2 border-rezia-blue rounded-xl p-8 shadow-md bg-white">
-            <h3 className="text-xl font-semibold mb-2 text-rezia-blue">Pro</h3>
-            <p className="text-gray-600 mb-6">Unlimited resume + cover letter generation.</p>
+          {/* Starter Plan */}
+          <div className="border-2 border-rezia-blue rounded-xl p-8 shadow-md bg-white transition-all duration-300 hover:scale-105 hover:shadow-lg hover:-translate-y-1">
+            <h3 className="text-xl font-semibold mb-2 text-rezia-blue">Starter</h3>
+            <p className="text-gray-600 mb-6">Unlimited resume optimization and tailored rewrites.</p>
             <ul className="space-y-3 text-sm text-gray-700 mb-6">
               <li>✅ Unlimited resume optimizations</li>
-              <li>✅ AI-generated cover letters</li>
               <li>✅ Tailored rewrites for each job</li>
               <li>✅ .docx export for easy editing</li>
-              <li>✅ Priority support</li>
+              <li>🚫 No cover letter generation</li>
+              <li>🚫 No priority support</li>
             </ul>
             <p className="text-3xl font-bold text-rezia-blue mb-4">$29.99<span className="text-base font-medium text-gray-500">/month</span></p>
             <a
               href="#try"
               className="inline-block bg-rezia-blue text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-rezia-blue/90 transition"
+            >
+              Try Rezia Starter
+            </a>
+          </div>
+
+          {/* Pro Plan */}
+          <div className="border-2 border-yellow-500 rounded-xl p-8 shadow-md bg-white transition-all duration-300 hover:scale-105 hover:shadow-lg hover:-translate-y-1">
+            <h3 className="text-xl font-semibold mb-2 text-yellow-600">Pro</h3>
+            <p className="text-gray-600 mb-6">Everything in Starter, plus cover letter generation and priority support.</p>
+            <ul className="space-y-3 text-sm text-gray-700 mb-6">
+              <li>✅ Unlimited resume optimizations</li>
+              <li>✅ Tailored rewrites for each job</li>
+              <li>✅ .docx export for easy editing</li>
+              <li>✅ Cover letter generation</li>
+              <li>✅ Priority support</li>
+            </ul>
+            <p className="text-3xl font-bold text-yellow-600 mb-4">$39.99<span className="text-base font-medium text-gray-500">/month</span></p>
+            <a
+              href="#try"
+              className="inline-block bg-yellow-500 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-yellow-600 transition"
             >
               Try Rezia Pro
             </a>

@@ -34,10 +34,10 @@ const Index = () => {
       <Hero />
       <LogoCarousel logos={companyLogos} />
       <Features />
+      <Pricing />
       <WhyChooseUs />
       <HowItWorks />
       <Testimonials />
-      <Pricing />
       <FAQ />
       <CTA />
       <Footer />
