@@ -41,11 +41,30 @@ export async function POST(req: Request) {
     const clerkUser = await client.users.getUser(userId);
     const email = clerkUser.emailAddresses[0]?.emailAddress || '';
     const fullName = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim();
-    const dbUser = await prisma.user.upsert({
-      where: { id: userId },
-      create: { id: userId, email, fullName },
-      update: { email, fullName },
-    });
+    // Ensure user record exists without violating unique email constraints
+    let dbUser = await prisma.user.findUnique({ where: { id: userId } });
+    if (dbUser) {
+      // Update existing user by ID
+      dbUser = await prisma.user.update({
+        where: { id: userId },
+        data: { email, fullName },
+      });
+    } else {
+      // No user with this ID, check by email
+      const emailUser = await prisma.user.findUnique({ where: { email } });
+      if (emailUser) {
+        // Update existing user by email
+        dbUser = await prisma.user.update({
+          where: { email },
+          data: { fullName },
+        });
+      } else {
+        // Create new user record
+        dbUser = await prisma.user.create({
+          data: { id: userId, email, fullName },
+        });
+      }
+    }
 
     // Enforce free-tier quota using freeRunsRemaining
     if (has({ plan: 'free_user' })) {

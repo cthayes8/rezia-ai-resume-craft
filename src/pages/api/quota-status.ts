@@ -17,16 +17,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(401).json({ error: 'Unauthorized' });
   }
   try {
-    // Ensure user record and fetch free run credits
+    // Ensure user record and fetch free run credits without violating unique email constraints
     const client = await clerkClient();
     const userRecord = await client.users.getUser(userId!);
     const email = userRecord.emailAddresses[0]?.emailAddress || '';
     const fullName = `${userRecord.firstName || ''} ${userRecord.lastName || ''}`.trim();
-    const dbUser = await prisma.user.upsert({
-      where: { id: userId! },
-      create: { id: userId!, email, fullName },
-      update: { email, fullName }
-    });
+    let dbUser = await prisma.user.findUnique({ where: { id: userId! } });
+    if (dbUser) {
+      // Update existing by ID
+      dbUser = await prisma.user.update({
+        where: { id: userId! },
+        data: { email, fullName },
+      });
+    } else {
+      // No user with this ID, check by email
+      const emailUser = await prisma.user.findUnique({ where: { email } });
+      if (emailUser) {
+        // Update existing by email
+        dbUser = await prisma.user.update({
+          where: { email },
+          data: { fullName },
+        });
+      } else {
+        // Create new user
+        dbUser = await prisma.user.create({
+          data: { id: userId!, email, fullName },
+        });
+      }
+    }
     return res.status(200).json({ freeRunsRemaining: dbUser.freeRunsRemaining });
   } catch (err) {
     console.error('Quota status error:', err);
