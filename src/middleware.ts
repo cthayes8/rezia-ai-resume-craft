@@ -12,8 +12,13 @@ const isPublic = (path: string) => {
 export const middleware = clerkMiddleware(
   // Handler receives auth() helper and the request
   async (auth, request) => {
+    const { pathname } = request.nextUrl;
+    // Allow webhook endpoints to bypass auth
+    if (pathname.startsWith('/api/webhooks')) {
+      return NextResponse.next();
+    }
     // Allow public paths
-    if (isPublic(request.nextUrl.pathname)) {
+    if (isPublic(pathname)) {
       return NextResponse.next();
     }
     // Authenticate the request
