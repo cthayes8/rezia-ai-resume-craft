@@ -87,14 +87,31 @@ export async function POST(req: Request) {
         const currentPeriodEnd = new Date(periodEndUnix * 1000);
         const status = subObj.status;
 
-        await prisma.subscription.updateMany({
+        // Use upsert so that updated events create missing records
+        const userId = subObj.metadata.userId;
+        if (!userId) {
+          console.warn(
+            `Subscription ${subscriptionId} missing metadata.userId; cannot upsert.`
+          );
+          break;
+        }
+        await prisma.subscription.upsert({
           where: { stripeSubscriptionId: subscriptionId },
-          data: {
+          update: {
             planName,
             status,
             currentPeriodStart,
             currentPeriodEnd,
             updatedAt: new Date(),
+          },
+          create: {
+            userId,
+            stripeCustomerId: subObj.customer as string,
+            stripeSubscriptionId: subscriptionId,
+            planName,
+            status,
+            currentPeriodStart,
+            currentPeriodEnd,
           },
         });
         break;
@@ -103,6 +120,7 @@ export async function POST(req: Request) {
         const subObj = event.data.object as Stripe.Subscription;
         const subscriptionId = subObj.id;
         // mark canceled
+        // Mark cancellation; if no record exists this will have no effect
         await prisma.subscription.updateMany({
           where: { stripeSubscriptionId: subscriptionId },
           data: { status: 'canceled', updatedAt: new Date() },
