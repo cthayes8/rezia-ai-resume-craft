@@ -42,7 +42,7 @@ const ResumeViewer = () => {
   });
   // Two-way binding: update editedResume JSON on editor updates
   useEffect(() => {
-    if (!editor) return;
+    if (!editor) return () => {};
     const handleUpdate = () => {
       const pmJSON = editor.getJSON();
       const newData = parseEditorJSON(pmJSON);
@@ -432,11 +432,11 @@ const ResumeViewer = () => {
                 <div className="mt-8">
                   <h3 className="text-lg font-semibold text-rezia-blue">Projects</h3>
                   <div className="space-y-4 mt-2">
-                    {resumeData.projects.map((proj, idx) => (
+                    {resumeData.projects.map((proj: { name: string; description: string; technologies?: string[] }, idx: number) => (
                       <div key={idx} className="bg-gray-50 p-4 rounded-lg">
                         <h4 className="font-medium text-gray-800">{proj.name}</h4>
                         <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">{proj.description}</p>
-                        {proj.technologies?.length > 0 && (
+                        {proj.technologies && proj.technologies.length > 0 && (
                           <p className="text-xs text-gray-500 mt-2">
                             Technologies: {proj.technologies.join(', ')}
                           </p>

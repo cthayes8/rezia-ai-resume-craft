@@ -1,10 +1,17 @@
 import { useResumeStore } from '@/lib/stores/resumeStore';
 
 export function OptimizeResume() {
-  const { currentResume, setOptimizationResult, setLoading, setError } = useResumeStore();
+  const { 
+    resumeData,
+    setResumeData,
+    setLoading,
+    setError,
+    jobDescription,
+    setJobDescription
+  } = useResumeStore();
 
   const handleOptimize = async (jobDescription: string) => {
-    if (!currentResume) return;
+    if (!resumeData) return;
 
     try {
       setLoading(true);
@@ -12,7 +19,7 @@ export function OptimizeResume() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          resumeText: JSON.stringify(currentResume),
+          resumeText: JSON.stringify(resumeData),
           jobDescription,
         }),
       });
@@ -22,7 +29,7 @@ export function OptimizeResume() {
       }
 
       const result = await response.json();
-      setOptimizationResult(result);
+      setResumeData(result.optimizedResume);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {

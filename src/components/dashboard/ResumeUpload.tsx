@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload } from "lucide-react";
-import { useRouter } from 'next/navigation';
+import { Upload, Loader2 } from "lucide-react";
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from "@/components/ui/use-toast";
 import type { ResumeData } from '@/types/resume';
 import { useResumeStore } from '@/lib/stores/resumeStore';
@@ -24,13 +24,17 @@ const ResumeUpload = () => {
   const [isParsing, setIsParsing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  // If linked from Saved page with a resume to use, pre-select it
+  const searchParams = useSearchParams();
+
+  // Replace the router.query useEffect with searchParams
   useEffect(() => {
-    const { useSavedResumeId } = router.query || {};
-    if (typeof useSavedResumeId === 'string') {
+    if (!searchParams) return;
+    const useSavedResumeId = searchParams.get('useSavedResumeId');
+    if (useSavedResumeId) {
       setSelectedSavedResumeId(useSavedResumeId);
     }
-  }, [router.query]);
+  }, [searchParams]);
+
   // Load user-saved resumes
   const loadSavedResumes = async () => {
     try {
@@ -258,10 +262,17 @@ const ResumeUpload = () => {
         
         <Button
           type="submit"
-          className="w-full bg-rezia-blue hover:bg-rezia-blue/90"
+          className="w-full bg-rezia-blue hover:bg-rezia-blue/90 flex items-center justify-center"
           disabled={isParsing}
         >
-          {isParsing ? 'Parsing resume...' : 'Optimize Resume'}
+          {isParsing ? (
+            <>
+              <Loader2 className="animate-spin mr-2 h-5 w-5" />
+              Parsing resume...
+            </>
+          ) : (
+            'Optimize Resume'
+          )}
         </Button>
       </form>
     </div>
