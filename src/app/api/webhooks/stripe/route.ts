@@ -22,15 +22,20 @@ export async function POST(req: Request) {
   try {
     switch (event.type) {
       case 'checkout.session.completed': {
+        // A Checkout Session has completed; persist or update the subscription
         const session = event.data.object as Stripe.Checkout.Session;
         const subscriptionId = session.subscription as string;
-        const userId = session.metadata?.userId as string;
-        // Retrieve subscription details
+        // Retrieve subscription details (metadata is on the subscription)
         const sub = await stripe.subscriptions.retrieve(subscriptionId);
         const planName = sub.items.data[0].price.id;
         const status = sub.status;
         const currentPeriodStart = new Date(sub.current_period_start * 1000);
         const currentPeriodEnd = new Date(sub.current_period_end * 1000);
+        // Pull userId from subscription metadata (set via subscription_data.metadata)
+        const userId = sub.metadata.userId;
+        if (!userId) {
+          throw new Error(`Subscription ${subscriptionId} missing userId metadata`);
+        }
         await prisma.subscription.upsert({
           where: { stripeSubscriptionId: subscriptionId },
           update: {
