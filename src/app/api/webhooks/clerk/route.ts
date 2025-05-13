@@ -41,8 +41,6 @@ export async function POST(request: Request) {
       }
       const stripeCustomerId = sub.customerId || sub.customer_id;
       const stripeSubscriptionId = sub.id;
-      const stripeCustomerId = sub.customerId || sub.customer_id;
-      const stripeSubscriptionId = sub.id;
       const planName = sub.planId || sub.priceId || sub.plan_id;
       const status = sub.status;
       const currentPeriodStart = sub.currentPeriodStart
