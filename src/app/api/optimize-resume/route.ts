@@ -79,8 +79,9 @@ export async function POST(req: Request) {
     const rawText = resumeText ?? '';
     const normalizedText = rawText.replace(/\s+/g, ' ').trim();
     const originalTextHash = createHash('sha256').update(normalizedText).digest('hex');
+    // Create resume file record linked to the correct DB user
     const resumeFile = await prisma.resumeFile.create({
-      data: { userId, fileName: fileName || '', filePath: '', originalTextHash },
+      data: { userId: dbUser.id, fileName: fileName || '', filePath: '', originalTextHash },
     });
     
     // Determine parsed resume: prefer provided resumeData, else cached or LLM parse
@@ -89,7 +90,8 @@ export async function POST(req: Request) {
       parsedResume = resumeData;
     } else {
       // Try to load cached parsedData
-      const saved = await prisma.savedResume.findFirst({ where: { userId, textHash: originalTextHash } });
+      // Try to load cached parsedData for this user
+      const saved = await prisma.savedResume.findFirst({ where: { userId: dbUser.id, textHash: originalTextHash } });
       if (saved?.parsedData) {
         parsedResume = saved.parsedData as ResumeData;
       } else {
@@ -288,7 +290,8 @@ export async function POST(req: Request) {
     updated.awards = parsedResume.awards || [];
     // 8. Persist optimization run
     const runData: OptimizationRunData = {
-      userId,
+      // Link run to the correct DB user
+      userId: dbUser.id,
       resumeFileId: resumeFile.id,
       jobDescription,
       templateId: String(templateId),
@@ -309,8 +312,9 @@ export async function POST(req: Request) {
     let run;
     if (has({ plan: 'free_user' })) {
       const [, newRun] = await prisma.$transaction([
+        // Decrement free runs on the correct DB user
         prisma.user.update({
-          where: { id: userId },
+          where: { id: dbUser.id },
           data: { freeRunsRemaining: { decrement: 1 } }
         }),
         prisma.optimizationRun.create({ data: runData as any })

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifyWebhook } from '@clerk/backend';
+import { clerkClient } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 
 export const runtime = 'nodejs';
@@ -16,7 +17,30 @@ export async function POST(request: Request) {
 
     if (type === 'billing.subscription.created' || type === 'billing.subscription.updated') {
       const sub = data;
+      // Determine Clerk user ID and ensure a DB user record exists
       const userId = sub.userId || sub.clerkUserId;
+      let dbUserId = userId;
+      try {
+        const userRecord = await clerkClient.users.getUser(userId);
+        const email = userRecord.emailAddresses[0]?.emailAddress || '';
+        const fullName = `${userRecord.firstName || ''} ${userRecord.lastName || ''}`.trim();
+        let dbUser = await prisma.user.findUnique({ where: { id: userId } });
+        if (dbUser) {
+          await prisma.user.update({ where: { id: userId }, data: { email, fullName } });
+        } else {
+          const emailUser = await prisma.user.findUnique({ where: { email } });
+          if (emailUser) {
+            await prisma.user.update({ where: { email }, data: { fullName } });
+            dbUserId = emailUser.id;
+          } else {
+            await prisma.user.create({ data: { id: userId, email, fullName } });
+          }
+        }
+      } catch (err) {
+        console.error('Error upserting user in billing webhook:', err);
+      }
+      const stripeCustomerId = sub.customerId || sub.customer_id;
+      const stripeSubscriptionId = sub.id;
       const stripeCustomerId = sub.customerId || sub.customer_id;
       const stripeSubscriptionId = sub.id;
       const planName = sub.planId || sub.priceId || sub.plan_id;
@@ -38,7 +62,7 @@ export async function POST(request: Request) {
           updatedAt: new Date(),
         },
         create: {
-          userId,
+          userId: dbUserId,
           stripeCustomerId,
           stripeSubscriptionId,
           planName,

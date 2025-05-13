@@ -165,6 +165,7 @@ const SavedResumesPage = () => {
             <div className="flex flex-col items-center space-y-2">
               <Loader2 className="h-8 w-8 text-rezia-blue animate-spin" />
               <p className="text-lg font-medium text-gray-700">Saving resume...</p>
+              <p className="text-sm text-gray-500">This takes about 30 seconds.</p>
             </div>
           ) : (
             <>

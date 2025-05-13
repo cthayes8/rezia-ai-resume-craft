@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getAuth } from '@clerk/nextjs/server';
+import { getAuth, clerkClient } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import OpenAI from 'openai';
 import { wrapCoverLetterContent } from '@/lib/wrapCoverLetterContent';
@@ -15,8 +15,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   // Authenticate via Clerk on Pages API
   const { userId } = getAuth(req);
+  let dbUserId = userId;
   if (!userId) {
     return res.status(401).json({ error: 'Unauthorized' });
+  }
+  // Ensure user record exists and get DB user ID
+  try {
+    const client = await clerkClient();
+    const userRecord = await client.users.getUser(userId);
+    const email = userRecord.emailAddresses[0]?.emailAddress || '';
+    const fullName = `${userRecord.firstName || ''} ${userRecord.lastName || ''}`.trim();
+    let dbUser = await prisma.user.findUnique({ where: { id: userId } });
+    if (dbUser) {
+      await prisma.user.update({ where: { id: userId }, data: { email, fullName } });
+    } else {
+      const emailUser = await prisma.user.findUnique({ where: { email } });
+      if (emailUser) {
+        await prisma.user.update({ where: { email }, data: { fullName } });
+        dbUserId = emailUser.id;
+      } else {
+        await prisma.user.create({ data: { id: userId, email, fullName } });
+      }
+    }
+  } catch (err) {
+    console.error('[generate-cover-letter] Error upserting user:', err);
+    return res.status(500).json({ error: 'Internal server error' });
   }
   try {
     const { runId, tone } = req.body as { runId?: string; tone?: string };
@@ -30,7 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     // Fetch the optimization run
     const run = await prisma.optimizationRun.findUnique({ where: { id: runId } });
-    if (!run || run.userId !== userId) {
+    if (!run || run.userId !== dbUserId) {
       return res.status(404).json({ error: 'Run not found' });
     }
     // Build the system prompt for cover letter
@@ -100,7 +123,7 @@ ${run.targetTitle}
     });
     // Persist wrapped letter text in DB
     const record = await prisma.coverLetter.create({
-      data: { userId, optimizationRunId: runId, letterText: wrapped }
+      data: { userId: dbUserId, optimizationRunId: runId, letterText: wrapped }
     });
     // Return the new record ID
     return res.status(200).json({ coverLetterId: record.id });

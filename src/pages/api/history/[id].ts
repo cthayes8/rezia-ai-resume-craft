@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getAuth } from '@clerk/nextjs/server';
+import { getAuth, clerkClient } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 
 /**
@@ -16,11 +16,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!userId) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
+  let dbUserId = userId;
+  // Ensure user record exists and get correct DB user ID
+  try {
+    const client = await clerkClient();
+    const userRecord = await client.users.getUser(userId);
+    const email = userRecord.emailAddresses[0]?.emailAddress || '';
+    const fullName = `${userRecord.firstName || ''} ${userRecord.lastName || ''}`.trim();
+    let dbUser = await prisma.user.findUnique({ where: { id: userId } });
+    if (dbUser) {
+      await prisma.user.update({ where: { id: userId }, data: { email, fullName } });
+    } else {
+      const emailUser = await prisma.user.findUnique({ where: { email } });
+      if (emailUser) {
+        await prisma.user.update({ where: { email }, data: { fullName } });
+        dbUserId = emailUser.id;
+      } else {
+        await prisma.user.create({ data: { id: userId, email, fullName } });
+      }
+    }
+  } catch (err) {
+    console.error('Error upserting user before fetch/delete run:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
   const runId = Array.isArray(id) ? id[0] : id;
   if (method === 'GET') {
     try {
       const run = await prisma.optimizationRun.findFirst({
-        where: { id: runId, userId, deletedAt: null }
+        where: { id: runId, userId: dbUserId, deletedAt: null }
       });
       if (!run) {
         return res.status(404).json({ error: 'Not found' });
@@ -46,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } else if (method === 'DELETE') {
     try {
       const result = await prisma.optimizationRun.updateMany({
-        where: { id: runId, userId, deletedAt: null },
+        where: { id: runId, userId: dbUserId, deletedAt: null },
         data: { deletedAt: new Date() }
       });
       if (result.count === 0) {
