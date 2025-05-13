@@ -18,6 +18,18 @@ export default function OptimizePage() {
   const { isLoaded, has } = useAuth();
   useEffect(() => {
     if (!isLoaded) return;
+    // If returning from Stripe Checkout, sync the session immediately
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+    if (sessionId) {
+      fetch(`/api/stripe/sync-session?session_id=${sessionId}`)
+        .then(() => {
+          // remove session_id param from URL
+          const newUrl = window.location.pathname;
+          window.history.replaceState({}, '', newUrl);
+        })
+        .catch(err => console.error('Sync error', err));
+    }
     // If user is on free plan, check their run count
     if (has({ plan: 'free_user' })) {
       fetch('/api/quota-status')

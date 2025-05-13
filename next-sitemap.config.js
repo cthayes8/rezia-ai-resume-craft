@@ -1,5 +1,5 @@
 /** @type {import('next-sitemap').IConfig} */
-module.exports = {
+export default {
   // Change to your site URL, or set via NEXT_PUBLIC_SITE_URL environment variable
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://Reslo.ai',
   generateRobotsTxt: true,

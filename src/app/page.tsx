@@ -7,7 +7,7 @@ import Features from "@/components/Features";
 import WhyChooseUs from "@/components/WhyChooseUs";
 import HowItWorks from "@/components/HowItWorks";
 import Testimonials from "@/components/Testimonials";
-import Pricing from "@/components/Pricing";
+import MarketingPricing from "@/components/MarketingPricing";
 import FAQ from "@/components/FAQ";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
@@ -34,7 +34,7 @@ const Index = () => {
       <Hero />
       <LogoCarousel logos={companyLogos} />
       <Features />
-      <Pricing />
+      <MarketingPricing />
       <WhyChooseUs />
       <HowItWorks />
       <Testimonials />

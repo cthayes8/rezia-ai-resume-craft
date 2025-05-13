@@ -57,7 +57,7 @@ const Navbar = () => {
                   How It Works
                 </Link>
                 <Link
-                  href="#pricing"
+                  href="/choose-plan"
                   className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-reslo-blue"
                 >
                   Pricing
@@ -133,7 +133,7 @@ const Navbar = () => {
               How It Works
             </Link>
             <Link
-              href="#pricing"
+              href="/choose-plan"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-reslo-blue"
             >
               Pricing
