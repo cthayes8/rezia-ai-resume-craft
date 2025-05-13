@@ -9,7 +9,7 @@ export default function PrivacyPolicy() {
       <Navbar />
       <main className="flex-grow container mx-auto px-4 py-8 max-w-4xl">
         <div className="prose prose-lg max-w-none">
-          <h1 className="text-3xl font-bold mb-8">Rezia Privacy Policy</h1>
+          <h1 className="text-3xl font-bold mb-8">Reslo Privacy Policy</h1>
           
           <div className="text-sm text-gray-600 mb-8">
             <p>Effective Date: March 19, 2024</p>
@@ -18,7 +18,7 @@ export default function PrivacyPolicy() {
 
           <div className="mb-8">
             <p className="text-lg">
-              Rezia AI LLC ("Rezia", "we", or "us") respects your privacy and is committed to protecting your personal data. This Privacy Policy describes how we collect, use, share, and protect your data when you access or use our AI-powered resume optimization service (the "Service").
+              Reslo AI LLC ("Reslo", "we", or "us") respects your privacy and is committed to protecting your personal data. This Privacy Policy describes how we collect, use, share, and protect your data when you access or use our AI-powered resume optimization service (the "Service").
             </p>
             <p className="mt-4">
               By accessing the Service, you agree to this Privacy Policy and our Terms of Use.
@@ -49,7 +49,7 @@ export default function PrivacyPolicy() {
 
             <h3 className="text-xl font-semibold mt-6 mb-3">d. Communications</h3>
             <ul className="list-disc pl-6 space-y-2">
-              <li>Emails, messages, or support tickets submitted to Rezia</li>
+              <li>Emails, messages, or support tickets submitted to Reslo</li>
             </ul>
 
             <h3 className="text-xl font-semibold mt-6 mb-3">e. Third-Party Sources</h3>
@@ -78,9 +78,9 @@ export default function PrivacyPolicy() {
             <h2 className="text-2xl font-semibold mb-4">3. AI Content and Data Usage</h2>
             <p className="mb-4">By uploading resumes or job descriptions, you agree that:</p>
             <ul className="list-disc pl-6 space-y-2">
-              <li>Rezia may store, process, and reuse your inputs and AI-generated outputs</li>
-              <li>Rezia may use your data for internal training, evaluation, marketing, or product improvement</li>
-              <li>Rezia retains commercial rights to de-identified and AI-generated data</li>
+              <li>Reslo may store, process, and reuse your inputs and AI-generated outputs</li>
+              <li>Reslo may use your data for internal training, evaluation, marketing, or product improvement</li>
+              <li>Reslo retains commercial rights to de-identified and AI-generated data</li>
             </ul>
             
             <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -93,7 +93,7 @@ export default function PrivacyPolicy() {
               </ul>
             </div>
             <p className="mt-4">
-              You are solely responsible for the content you provide. Rezia is not liable for unauthorized or inappropriate content uploads.
+              You are solely responsible for the content you provide. Reslo is not liable for unauthorized or inappropriate content uploads.
             </p>
           </section>
 
@@ -143,7 +143,7 @@ export default function PrivacyPolicy() {
               <li>Necessary for fraud prevention, dispute resolution, or legal obligations</li>
             </ul>
             <p className="mt-4">
-              You may request account deletion at any time by emailing privacy@rezia.ai.
+              You may request account deletion at any time by emailing privacy@Reslo.ai.
             </p>
           </section>
 
@@ -159,14 +159,14 @@ export default function PrivacyPolicy() {
               <li>Port data to another service</li>
             </ul>
             <p className="mt-4">
-              You may exercise your rights by contacting privacy@rezia.ai. We may require identity verification. If you authorize an agent to submit a request on your behalf, written consent and verification will be required.
+              You may exercise your rights by contacting privacy@Reslo.ai. We may require identity verification. If you authorize an agent to submit a request on your behalf, written consent and verification will be required.
             </p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">7. Accuracy of Outputs</h2>
             <p>
-              AI-generated resume content is based on predictive algorithms and may be inaccurate or misleading. Rezia does not guarantee factual correctness of any output. You are solely responsible for verifying the accuracy and legality of AI-generated resumes.
+              AI-generated resume content is based on predictive algorithms and may be inaccurate or misleading. Reslo does not guarantee factual correctness of any output. You are solely responsible for verifying the accuracy and legality of AI-generated resumes.
             </p>
           </section>
 
@@ -200,7 +200,7 @@ export default function PrivacyPolicy() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">11. Business Transfers</h2>
             <p>
-              If Rezia undergoes a merger, acquisition, reorganization, bankruptcy, or sale of assets, your data may be transferred as part of that transaction.
+              If Reslo undergoes a merger, acquisition, reorganization, bankruptcy, or sale of assets, your data may be transferred as part of that transaction.
             </p>
           </section>
 
@@ -215,14 +215,14 @@ export default function PrivacyPolicy() {
             <h2 className="text-2xl font-semibold mb-4">13. Contact</h2>
             <p>For privacy inquiries or requests, contact:</p>
             <ul className="list-none pl-0 mt-2">
-              <li>📧 privacy@rezia.ai</li>
-              <li>📍 Rezia AI LLC – Tampa, FL, USA</li>
+              <li>📧 privacy@Reslo.ai</li>
+              <li>📍 Reslo AI LLC – Tampa, FL, USA</li>
             </ul>
           </section>
 
           <div className="mt-12 p-6 bg-gray-50 rounded-lg">
             <p className="font-medium">
-              By using Rezia, you acknowledge that you have read and understood this Privacy Policy.
+              By using Reslo, you acknowledge that you have read and understood this Privacy Policy.
             </p>
           </div>
         </div>

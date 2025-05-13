@@ -12,7 +12,7 @@ const testimonials = [
     name: "Alex Johnson",
     role: "Software Engineer",
     content:
-      "After months of silence on LinkedIn, I used Rezia—and landed 3 interviews in my first week. The AI nailed what I needed to change.",
+      "After months of silence on LinkedIn, I used Reslo—and landed 3 interviews in my first week. The AI nailed what I needed to change.",
     rating: 5,
     avatar: "https://randomuser.me/api/portraits/men/32.jpg",
   },
@@ -21,7 +21,7 @@ const testimonials = [
     name: "Sarah Williams",
     role: "Marketing Manager",
     content:
-      "Rezia helped me get past the ATS for a role I thought was out of reach. The keyword optimization was a total game changer.",
+      "Reslo helped me get past the ATS for a role I thought was out of reach. The keyword optimization was a total game changer.",
     rating: 5,
     avatar: "https://randomuser.me/api/portraits/women/44.jpg",
   },
@@ -30,7 +30,7 @@ const testimonials = [
     name: "Michael Chen",
     role: "Data Analyst",
     content:
-      "I was switching industries and struggling to frame my experience. Rezia translated my background into language that recruiters responded to.",
+      "I was switching industries and struggling to frame my experience. Reslo translated my background into language that recruiters responded to.",
     rating: 5,
     avatar: "https://randomuser.me/api/portraits/men/46.jpg",
   },
@@ -39,7 +39,7 @@ const testimonials = [
     name: "Priya Patel",
     role: "Product Manager",
     content:
-      "Rezia's rewrite made me sound like the perfect candidate. I got interview invites from two dream companies within a week.",
+      "Reslo's rewrite made me sound like the perfect candidate. I got interview invites from two dream companies within a week.",
     rating: 5,
     avatar: "https://randomuser.me/api/portraits/women/68.jpg",
   },
@@ -48,7 +48,7 @@ const testimonials = [
     name: "David Kim",
     role: "UX Designer",
     content:
-      "I never realized how generic my resume was. Rezia made it sharp, tailored, and keyword-rich—and I finally started hearing back.",
+      "I never realized how generic my resume was. Reslo made it sharp, tailored, and keyword-rich—and I finally started hearing back.",
     rating: 5,
     avatar: "https://randomuser.me/api/portraits/men/65.jpg",
   },
@@ -57,7 +57,7 @@ const testimonials = [
     name: "Maria Garcia",
     role: "HR Specialist",
     content:
-      "I tell every job seeker I meet: use Rezia. It writes the resume recruiters *want* to read—no fluff, just impact.",
+      "I tell every job seeker I meet: use Reslo. It writes the resume recruiters *want* to read—no fluff, just impact.",
     rating: 5,
     avatar: "https://randomuser.me/api/portraits/women/12.jpg",
   },
@@ -66,7 +66,7 @@ const testimonials = [
     name: "James Lee",
     role: "Business Analyst",
     content:
-      "Before Rezia: silence. After Rezia: 4 callbacks in 5 days. I was honestly shocked by the difference.",
+      "Before Reslo: silence. After Reslo: 4 callbacks in 5 days. I was honestly shocked by the difference.",
     rating: 5,
     avatar: "https://randomuser.me/api/portraits/men/23.jpg",
   },
@@ -75,7 +75,7 @@ const testimonials = [
     name: "Emily Nguyen",
     role: "Operations Lead",
     content:
-      "Rezia gave me the confidence to apply to roles I used to scroll past. It made me sound like a leader, not just an applicant.",
+      "Reslo gave me the confidence to apply to roles I used to scroll past. It made me sound like a leader, not just an applicant.",
     rating: 5,
     avatar: "https://randomuser.me/api/portraits/women/50.jpg",
   },
@@ -120,7 +120,7 @@ const Testimonials = () => {
             What Job Seekers Say
           </h2>
           <p className="text-lg text-gray-700">
-            Thousands of professionals have boosted their careers with Rezia. Real results. Real interviews.
+            Thousands of professionals have boosted their careers with Reslo. Real results. Real interviews.
           </p>
         </div>
 
@@ -172,7 +172,7 @@ const Testimonials = () => {
         <div className="mt-16 text-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm max-w-4xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between max-w-3xl mx-auto">
             <div className="mb-6 md:mb-0 md:mr-8 text-left">
-              <div className="font-semibold text-xl mb-2 text-rezia-blue">
+              <div className="font-semibold text-xl mb-2 text-reslo-blue">
                 Results That Matter
               </div>
               <h3 className="text-2xl font-bold">
@@ -181,13 +181,13 @@ const Testimonials = () => {
             </div>
             <div className="grid grid-cols-2 gap-4 text-left">
               <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="text-3xl font-bold text-rezia-blue">3x</div>
+                <div className="text-3xl font-bold text-reslo-blue">3x</div>
                 <div className="text-sm text-gray-600">
                   Increase in response rate
                 </div>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="text-3xl font-bold text-rezia-blue">94%</div>
+                <div className="text-3xl font-bold text-reslo-blue">94%</div>
                 <div className="text-sm text-gray-600">Pass ATS systems</div>
               </div>
             </div>
@@ -201,9 +201,9 @@ const Testimonials = () => {
           </p>
           <a
             href="/sign-up"
-            className="inline-block bg-rezia-blue hover:bg-rezia-blue/90 text-white font-semibold px-6 py-3 rounded-lg shadow transition"
+            className="inline-block bg-reslo-blue hover:bg-reslo-blue/90 text-white font-semibold px-6 py-3 rounded-lg shadow transition"
           >
-            Try Rezia Free → Optimize Your Resume
+            Try Reslo Free → Optimize Your Resume
           </a>
         </div>
       </div>

@@ -14,15 +14,15 @@ const Hero = () => {
             Get 3x More Interviews With an <span className="text-gradient">AI-Optimized Resume</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-700 mb-8 max-w-lg">
-            Rezia rewrites your resume to match the job—helping you pass ATS scans and land more interviews.
+            Reslo rewrites your resume to match the job—helping you pass ATS scans and land more interviews.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link href="/sign-up">
-                <Button className="bg-rezia-blue hover:bg-rezia-blue/90 text-lg h-12 px-6">
+                <Button className="bg-reslo-blue hover:bg-reslo-blue/90 text-lg h-12 px-6">
                   Try for Free -{">"} Optimize Now
                 </Button>
               </Link>
-              <Button variant="outline" className="border-rezia-blue text-rezia-blue hover:bg-rezia-blue/10 text-lg h-12 px-6">
+              <Button variant="outline" className="border-reslo-blue text-reslo-blue hover:bg-reslo-blue/10 text-lg h-12 px-6">
                 Learn More
               </Button>
             </div>
@@ -46,12 +46,12 @@ const Hero = () => {
                     <div className="h-2 bg-gray-200 rounded w-2/5 mb-2"></div>
                     <div className="h-2 bg-gray-200 rounded w-4/5"></div>
                   </div>
-                  <div className="bg-rezia-blue/10 rounded p-3 border border-rezia-blue/30">
+                  <div className="bg-reslo-blue/10 rounded p-3 border border-reslo-blue/30">
                     <div className="flex justify-between mb-1">
-                      <div className="h-2 bg-rezia-blue/40 rounded w-1/4"></div>
-                      <div className="h-2 bg-rezia-blue/40 rounded w-1/6"></div>
+                      <div className="h-2 bg-reslo-blue/40 rounded w-1/4"></div>
+                      <div className="h-2 bg-reslo-blue/40 rounded w-1/6"></div>
                     </div>
-                    <div className="h-2 bg-rezia-blue/40 rounded w-11/12"></div>
+                    <div className="h-2 bg-reslo-blue/40 rounded w-11/12"></div>
                   </div>
                   <div className="bg-white rounded p-3 border border-gray-200">
                     <div className="h-2 bg-gray-200 rounded w-3/5 mb-2"></div>
@@ -59,12 +59,12 @@ const Hero = () => {
                   </div>
                 </div>
                 <div className="mt-4 flex justify-end">
-                  <div className="h-8 bg-rezia-blue rounded-md w-1/3"></div>
+                  <div className="h-8 bg-reslo-blue rounded-md w-1/3"></div>
                 </div>
               </div>
             </div>
-            <div className="absolute top-8 -right-4 w-20 h-20 bg-rezia-turquoise/30 rounded-full blur-2xl"></div>
-            <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-rezia-blue/30 rounded-full blur-2xl"></div>
+            <div className="absolute top-8 -right-4 w-20 h-20 bg-reslo-turquoise/30 rounded-full blur-2xl"></div>
+            <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-reslo-blue/30 rounded-full blur-2xl"></div>
           </div>
         </div>
       </div>

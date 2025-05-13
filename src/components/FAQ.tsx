@@ -9,29 +9,29 @@ import {
 
 const faqs = [
   {
-    question: "How does Rezia optimize my resume?",
+    question: "How does Reslo optimize my resume?",
     answer:
-      "Rezia reads your resume the way recruiters and ATS systems do. It identifies missing keywords, rewrites your bullets, and boosts the content so it better matches the job you're applying for—helping you land more interviews.",
+      "Reslo reads your resume the way recruiters and ATS systems do. It identifies missing keywords, rewrites your bullets, and boosts the content so it better matches the job you're applying for—helping you land more interviews.",
   },
   {
     question: "What do I get for free?",
     answer:
-      "You get one full resume optimization, including personalized keyword matching, bullet rewrites, and formatting improvements. No credit card required. It's the perfect way to try Rezia before upgrading.",
+      "You get one full resume optimization, including personalized keyword matching, bullet rewrites, and formatting improvements. No credit card required. It's the perfect way to try Reslo before upgrading.",
   },
   {
-    question: "How much does Rezia cost?",
+    question: "How much does Reslo cost?",
     answer:
-      "After your free resume optimization, you can upgrade to Rezia Standardfor $29.99/month. This includes unlimited resume optimizations, job-specific rewrites, and document downloads.",
+      "After your free resume optimization, you can upgrade to Reslo Standardfor $29.99/month. This includes unlimited resume optimizations, job-specific rewrites, and document downloads.",
   },
   {
-    question: "Does Rezia also generate cover letters?",
+    question: "Does Reslo also generate cover letters?",
     answer:
-      "Yes. Rezia Premium includes one-click cover letter generation tailored to your optimized resume and the job description—written in your tone, instantly.",
+      "Yes. Reslo Premium includes one-click cover letter generation tailored to your optimized resume and the job description—written in your tone, instantly.",
   },
   {
-    question: "Can I use Rezia for multiple job applications?",
+    question: "Can I use Reslo for multiple job applications?",
     answer:
-      "Absolutely. Rezia is designed to optimize your resume for each job you apply to. Pro users can create unlimited resume versions, each one tailored to a different opportunity.",
+      "Absolutely. Reslo is designed to optimize your resume for each job you apply to. Pro users can create unlimited resume versions, each one tailored to a different opportunity.",
   },
   {
     question: "Is my resume data secure?",
@@ -39,12 +39,12 @@ const faqs = [
       "Yes. We use bank-level encryption to protect your resume data. Your information is never shared with third parties, and you can request deletion at any time.",
   },
   {
-    question: "Can Rezia help with career transitions?",
+    question: "Can Reslo help with career transitions?",
     answer:
-      "Definitely. Rezia is great for career changers. It helps surface transferable skills, reframes your experience for new roles, and writes language that resonates with hiring managers in your target industry.",
+      "Definitely. Reslo is great for career changers. It helps surface transferable skills, reframes your experience for new roles, and writes language that resonates with hiring managers in your target industry.",
   },
   {
-    question: "Does Rezia work with all resume formats?",
+    question: "Does Reslo work with all resume formats?",
     answer:
       "Yes. We support Word (.doc and .docx) and PDF files. No matter how your resume starts, we'll help you upgrade it.",
   },
@@ -60,7 +60,7 @@ const FAQ = () => {
             Frequently Asked Questions
           </h2>
           <p className="text-lg text-gray-700">
-            Everything you need to know about using Rezia to upgrade your resume.
+            Everything you need to know about using Reslo to upgrade your resume.
           </p>
         </div>
 
@@ -89,7 +89,7 @@ const FAQ = () => {
           <p className="text-gray-600 mb-2">Still have questions?</p>
           <a
             href="#"
-            className="text-rezia-blue font-medium hover:underline"
+            className="text-reslo-blue font-medium hover:underline"
           >
             Contact our support team
           </a>

@@ -56,7 +56,7 @@ const LoadingScreen = () => {
             {steps.map((step, index) => (
               <div key={index} className="flex items-center">
                 <div className={`flex-shrink-0 h-5 w-5 rounded-full mr-3 flex items-center justify-center ${
-                  step.completed ? "bg-rezia-blue" : "bg-gray-200"
+                  step.completed ? "bg-reslo-blue" : "bg-gray-200"
                 }`}>
                   {step.completed && (
                     <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">

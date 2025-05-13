@@ -73,7 +73,7 @@ export default function OptimizePage() {
             You’ve used your free resume optimization. Upgrade to a paid plan to continue optimizing unlimited resumes.
           </p>
           <Button
-            className="px-6 py-2 bg-rezia-blue text-white rounded-md hover:bg-rezia-blue/90"
+            className="px-6 py-2 bg-reslo-blue text-white rounded-md hover:bg-reslo-blue/90"
             onClick={() => { window.location.href = '/dashboard/account/billing'; }}
           >
             Manage Billing

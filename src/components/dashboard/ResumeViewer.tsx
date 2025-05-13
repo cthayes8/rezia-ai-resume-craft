@@ -256,7 +256,7 @@ const ResumeViewer = () => {
       <div
         contentEditable
         suppressContentEditableWarning
-        className={`outline-none focus:ring-1 focus:ring-rezia-blue rounded px-1 -mx-1 whitespace-pre-wrap ${className}`}
+        className={`outline-none focus:ring-1 focus:ring-reslo-blue rounded px-1 -mx-1 whitespace-pre-wrap ${className}`}
         onBlur={(e) => onChange(e.currentTarget.innerText)}
         dangerouslySetInnerHTML={{ __html: content }}
       />
@@ -264,7 +264,7 @@ const ResumeViewer = () => {
       <span
         contentEditable
         suppressContentEditableWarning
-        className={`outline-none focus:ring-1 focus:ring-rezia-blue rounded px-1 -mx-1 ${className}`}
+        className={`outline-none focus:ring-1 focus:ring-reslo-blue rounded px-1 -mx-1 ${className}`}
         onBlur={(e) => onChange(e.currentTarget.innerText)}
         dangerouslySetInnerHTML={{ __html: content }}
       />
@@ -281,7 +281,7 @@ const ResumeViewer = () => {
             onChange={(value) => handleTextEdit('work', `title|${value}`, index)}
             className="font-bold"
           />
-          <div className="text-rezia-blue italic">
+          <div className="text-reslo-blue italic">
             <EditableContent
               content={job.company}
               onChange={(value) => handleTextEdit('work', `company|${value}`, index)}
@@ -367,7 +367,7 @@ const ResumeViewer = () => {
       case "modern":
         return (
           <div className="p-8 bg-white border rounded-lg">
-            <div className="border-l-4 border-rezia-blue pl-4">
+            <div className="border-l-4 border-reslo-blue pl-4">
               <h2 className="text-2xl font-bold">{resumeData.name}</h2>
               <div className="text-sm text-gray-600 mt-1 flex flex-wrap items-center space-x-1">
                 <EditableContent
@@ -393,7 +393,7 @@ const ResumeViewer = () => {
             <div className="mt-6 space-y-6">
               {resumeData.summary && (
                 <div>
-                  <h3 className="text-lg font-semibold text-rezia-blue">Summary</h3>
+                  <h3 className="text-lg font-semibold text-reslo-blue">Summary</h3>
                   <EditableContent
                     content={resumeData.summary || ''}
                     onChange={(v) => handleTextEdit('summary', v)}
@@ -404,23 +404,23 @@ const ResumeViewer = () => {
               )}
               
               <div>
-                <h3 className="text-lg font-semibold text-rezia-blue">Experience</h3>
+                <h3 className="text-lg font-semibold text-reslo-blue">Experience</h3>
                 {renderWorkExperience(resumeData.work)}
               </div>
               
               <div>
-                <h3 className="text-lg font-semibold text-rezia-blue">Education</h3>
+                <h3 className="text-lg font-semibold text-reslo-blue">Education</h3>
                 {renderEducation(resumeData.education)}
               </div>
               
               <div>
-                <h3 className="text-lg font-semibold text-rezia-blue">Skills</h3>
+                <h3 className="text-lg font-semibold text-reslo-blue">Skills</h3>
                 {renderSkills(resumeData.skills)}
               </div>
 
               {resumeData.certifications?.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold text-rezia-blue">Certifications</h3>
+                  <h3 className="text-lg font-semibold text-reslo-blue">Certifications</h3>
                   <ul className="list-disc pl-5 mt-2 text-sm">
                     {resumeData.certifications.map((cert: string, i: number) => (
                       <li key={i}>{cert}</li>
@@ -430,7 +430,7 @@ const ResumeViewer = () => {
               )}
               {resumeData.projects?.length > 0 && (
                 <div className="mt-8">
-                  <h3 className="text-lg font-semibold text-rezia-blue">Projects</h3>
+                  <h3 className="text-lg font-semibold text-reslo-blue">Projects</h3>
                   <div className="space-y-4 mt-2">
                     {resumeData.projects.map((proj: { name: string; description: string; technologies?: string[] }, idx: number) => (
                       <div key={idx} className="bg-gray-50 p-4 rounded-lg">
@@ -489,12 +489,12 @@ const ResumeViewer = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="md:col-span-2">
-                <h3 className="font-bold text-lg pb-2 border-b-2 border-rezia-blue">Experience</h3>
+                <h3 className="font-bold text-lg pb-2 border-b-2 border-reslo-blue">Experience</h3>
                 {renderWorkExperience(resumeData.work)}
               </div>
               
               <div>
-                <h3 className="font-bold text-lg pb-2 border-b-2 border-rezia-blue">Skills & Education</h3>
+                <h3 className="font-bold text-lg pb-2 border-b-2 border-reslo-blue">Skills & Education</h3>
                 <div className="mt-4 space-y-4">
                   <div>
                     <p className="font-medium">Skills</p>
@@ -603,7 +603,7 @@ const ResumeViewer = () => {
             <div className="flex items-center">
               <h1 className="text-2xl font-bold text-gray-800 mr-6">Your Resume</h1>
               <button
-                className="flex items-center text-sm text-gray-600 hover:text-rezia-blue transition-colors"
+                className="flex items-center text-sm text-gray-600 hover:text-reslo-blue transition-colors"
                 onClick={toggleResume}
               >
                 {showOriginal ? (
@@ -633,14 +633,14 @@ const ResumeViewer = () => {
                 </Select>
               )}
               <Button
-                className="bg-rezia-blue hover:bg-rezia-blue/90 flex items-center gap-2"
+                className="bg-reslo-blue hover:bg-reslo-blue/90 flex items-center gap-2"
                 onClick={handleDownload}
               >
                 <Download className="h-4 w-4" />
                 <span>Download</span>
               </Button>
               {!showOriginal && (
-                <Protect plan="rezia_premium" fallback={null}>
+                <Protect plan="Reslo_premium" fallback={null}>
                   {coverLetterUrl ? (
                     <Button
                       variant="outline"

@@ -158,19 +158,19 @@ const SavedResumesPage = () => {
       {/* Upload widget for saving a new resume */}
       {saved.length < 3 && (
         <div
-          className="border-2 border-dashed border-gray-300 rounded-lg p-6 mb-6 cursor-pointer hover:border-rezia-blue transition-colors text-center"
+          className="border-2 border-dashed border-gray-300 rounded-lg p-6 mb-6 cursor-pointer hover:border-reslo-blue transition-colors text-center"
           onClick={isSaving ? undefined : handleUploadClick}
         >
           {isSaving ? (
             <div className="flex flex-col items-center space-y-2">
-              <Loader2 className="h-8 w-8 text-rezia-blue animate-spin" />
+              <Loader2 className="h-8 w-8 text-reslo-blue animate-spin" />
               <p className="text-lg font-medium text-gray-700">Saving resume...</p>
               <p className="text-sm text-gray-500">This takes about 30 seconds.</p>
             </div>
           ) : (
             <>
               <div className="flex flex-col items-center space-y-2">
-                <Upload className="h-8 w-8 text-rezia-blue" />
+                <Upload className="h-8 w-8 text-reslo-blue" />
                 <p className="text-lg font-medium text-gray-700">Click to upload a resume to save</p>
                 <p className="text-sm text-gray-500">PDF or Word documents up to 10MB</p>
               </div>
@@ -193,7 +193,7 @@ const SavedResumesPage = () => {
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-3">
                   <div className="p-2 bg-blue-50 rounded-lg">
-                    <FileText className="h-6 w-6 text-rezia-blue" />
+                    <FileText className="h-6 w-6 text-reslo-blue" />
                   </div>
                   <div>
                     <h3 className="font-medium">{item.name}</h3>
@@ -225,7 +225,7 @@ const SavedResumesPage = () => {
             You haven’t saved any resumes yet
           </p>
           <Button
-            className="bg-rezia-blue hover:bg-rezia-blue/90"
+            className="bg-reslo-blue hover:bg-reslo-blue/90"
             onClick={() => router.push('/dashboard')}
           >
             Upload Your First Resume

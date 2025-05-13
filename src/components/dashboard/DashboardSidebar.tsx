@@ -43,8 +43,8 @@ const DashboardSidebar = () => {
         <div className="p-4 border-b border-gray-200">
           <Link href="/" className="flex items-center">
           <img
-            src="/Rezia_Logo_long.png"
-            alt="Rezia Logo"
+            src="/Reslo_Logo_long.png"
+            alt="Reslo Logo"
             className="h-10 w-auto"
           />
           </Link>
@@ -58,7 +58,7 @@ const DashboardSidebar = () => {
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                 pathname === link.href
-                  ? "bg-rezia-blue text-white"
+                  ? "bg-reslo-blue text-white"
                   : "text-gray-700 hover:bg-gray-100"
               )}
             >

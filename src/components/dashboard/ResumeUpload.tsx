@@ -207,7 +207,7 @@ const ResumeUpload = () => {
               id="savedResume"
               value={selectedSavedResumeId}
               onChange={e => setSelectedSavedResumeId(e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rezia-blue"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-reslo-blue"
             >
               <option value="new">Upload New Resume</option>
               {savedResumes.map(r => (
@@ -219,12 +219,12 @@ const ResumeUpload = () => {
         {selectedSavedResumeId === 'new' && (
         <div className="space-y-4">
           <div
-            className="border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-rezia-blue transition-colors"
+            className="border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-reslo-blue transition-colors"
             onClick={handleUploadClick}
           >
             <div className="flex flex-col items-center justify-center space-y-3">
               <div className="bg-gray-100 p-3 rounded-full">
-                <Upload className="h-8 w-8 text-rezia-blue" />
+                <Upload className="h-8 w-8 text-reslo-blue" />
               </div>
               <div className="text-center">
                 <p className="text-lg font-medium text-gray-700">
@@ -262,7 +262,7 @@ const ResumeUpload = () => {
         
         <Button
           type="submit"
-          className="w-full bg-rezia-blue hover:bg-rezia-blue/90 flex items-center justify-center"
+          className="w-full bg-reslo-blue hover:bg-reslo-blue/90 flex items-center justify-center"
           disabled={isParsing}
         >
           {isParsing ? (

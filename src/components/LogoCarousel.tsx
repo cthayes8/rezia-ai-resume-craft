@@ -22,7 +22,7 @@ interface LogoCarouselProps {
 }
 
 const LogoCarousel = ({
-  heading = "Rezia resumes helped applicants stand out at top companies like...",
+  heading = "Reslo resumes helped applicants stand out at top companies like...",
   logos = [
     {
       id: "logo-1",

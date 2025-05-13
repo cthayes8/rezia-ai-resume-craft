@@ -15,7 +15,7 @@ const benefits = [
     icon: Brain,
     title: "AI That Understands Hiring",
     description:
-      "Rezia knows what recruiters and ATS bots are looking for—and tailors your resume accordingly.",
+      "Reslo knows what recruiters and ATS bots are looking for—and tailors your resume accordingly.",
   },
   {
     icon: Zap,
@@ -27,7 +27,7 @@ const benefits = [
     icon: Target,
     title: "Laser-Focused on Each Job",
     description:
-      "Rezia matches your resume to each job description, so you stand out every time you apply.",
+      "Reslo matches your resume to each job description, so you stand out every time you apply.",
   },
   {
     icon: PenTool,
@@ -42,14 +42,14 @@ const WhyChooseUs = () => (
     <div className="container mx-auto px-4">
       {/* Section Header */}
       <div className="text-center max-w-2xl mx-auto mb-12">
-        <Badge className="mb-2 bg-rezia-blue/10 text-rezia-blue border-none uppercase tracking-wide">
+        <Badge className="mb-2 bg-reslo-blue/10 text-reslo-blue border-none uppercase tracking-wide">
           Why Choose Us
         </Badge>
         <h2 className="text-3xl font-bold mb-4">
-          Why Job Seekers Choose Rezia
+          Why Job Seekers Choose Reslo
         </h2>
         <p className="text-gray-600">
-          Rezia isn't just another resume tool. We combine expert strategy with
+          Reslo isn't just another resume tool. We combine expert strategy with
           cutting-edge AI to help you stand out in a sea of applicants—faster,
           easier, and smarter than ever.
         </p>
@@ -62,7 +62,7 @@ const WhyChooseUs = () => (
             key={idx}
             className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all hover:-translate-y-1"
           >
-            <benefit.icon className="h-6 w-6 text-rezia-blue mb-4" />
+            <benefit.icon className="h-6 w-6 text-reslo-blue mb-4" />
             <h3 className="font-semibold text-lg mb-2">{benefit.title}</h3>
             <p className="text-sm text-gray-600">{benefit.description}</p>
           </div>
@@ -73,9 +73,9 @@ const WhyChooseUs = () => (
       <div className="text-center mt-10">
         <Button
           asChild
-          className="bg-rezia-blue hover:bg-rezia-blue/90 text-white font-semibold px-6 py-3 rounded-lg shadow transition"
+          className="bg-reslo-blue hover:bg-reslo-blue/90 text-white font-semibold px-6 py-3 rounded-lg shadow transition"
         >
-          <a href="/sign-up">Try Rezia Free → Optimize Your Resume</a>
+          <a href="/sign-up">Try Reslo Free → Optimize Your Resume</a>
         </Button>
       </div>
     </div>

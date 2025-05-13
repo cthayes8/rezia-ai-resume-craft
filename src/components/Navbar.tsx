@@ -29,8 +29,8 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0">
               <img 
-                src="/Rezia_Logo_long.png" 
-                alt="Rezia" 
+                src="/Reslo_Logo_long.png" 
+                alt="Reslo" 
                 className="h-10 w-auto" 
               />
             </Link>
@@ -39,26 +39,26 @@ const Navbar = () => {
                 <Link
                   href="/"
                   className={`px-3 py-2 rounded-md text-sm font-medium ${
-                    router.pathname === '/' ? 'text-rezia-blue' : 'text-gray-700 hover:text-rezia-blue'
+                    router.pathname === '/' ? 'text-reslo-blue' : 'text-gray-700 hover:text-reslo-blue'
                   }`}
                 >
                   Home
                 </Link>
                 <Link
                   href="#features"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-rezia-blue"
+                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-reslo-blue"
                 >
                   Features
                 </Link>
                 <Link
                   href="#how-it-works"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-rezia-blue"
+                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-reslo-blue"
                 >
                   How It Works
                 </Link>
                 <Link
                   href="#pricing"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-rezia-blue"
+                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-reslo-blue"
                 >
                   Pricing
                 </Link>
@@ -72,7 +72,7 @@ const Navbar = () => {
                   {/* Dashboard link for signed-in users */}
                   <Link
                     href="/dashboard"
-                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-rezia-blue"
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-reslo-blue"
                   >
                     Dashboard
                   </Link>
@@ -82,10 +82,10 @@ const Navbar = () => {
                 </>
               ) : (
                 <>
-                  <Button asChild variant="outline" className="border-rezia-blue text-rezia-blue hover:bg-rezia-blue/10">
+                  <Button asChild variant="outline" className="border-reslo-blue text-reslo-blue hover:bg-reslo-blue/10">
                     <Link href="/sign-in">Sign In</Link>
                   </Button>
-                  <Button asChild className="bg-rezia-blue hover:bg-rezia-blue/90">
+                  <Button asChild className="bg-reslo-blue hover:bg-reslo-blue/90">
                     <Link href="/sign-up">Get Started</Link>
                   </Button>
                 </>
@@ -95,7 +95,7 @@ const Navbar = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-rezia-blue focus:outline-none"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-reslo-blue focus:outline-none"
             >
               <span className="sr-only">Open main menu</span>
               {!isMobileMenuOpen ? (
@@ -116,25 +116,25 @@ const Navbar = () => {
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <Link
               href="/"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rezia-blue"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-reslo-blue"
             >
               Home
             </Link>
             <Link
               href="#features"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rezia-blue"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-reslo-blue"
             >
               Features
             </Link>
             <Link
               href="#how-it-works"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rezia-blue"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-reslo-blue"
             >
               How It Works
             </Link>
             <Link
               href="#pricing"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rezia-blue"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-reslo-blue"
             >
               Pricing
             </Link>
@@ -155,10 +155,10 @@ const Navbar = () => {
                 </>
               ) : (
                 <>
-                  <Button asChild variant="outline" className="w-full justify-center border-rezia-blue text-rezia-blue hover:bg-rezia-blue/10">
+                  <Button asChild variant="outline" className="w-full justify-center border-reslo-blue text-reslo-blue hover:bg-reslo-blue/10">
                     <Link href="/sign-in">Sign In</Link>
                   </Button>
-                  <Button asChild className="w-full justify-center bg-rezia-blue hover:bg-rezia-blue/90">
+                  <Button asChild className="w-full justify-center bg-reslo-blue hover:bg-reslo-blue/90">
                     <Link href="/sign-up">Get Started</Link>
                   </Button>
                 </>

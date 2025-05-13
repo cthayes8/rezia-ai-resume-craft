@@ -100,11 +100,11 @@
   }
 
   .gradient-bg {
-    @apply bg-gradient-to-br from-rezia-blue to-rezia-turquoise;
+    @apply bg-gradient-to-br from-reslo-blue to-reslo-turquoise;
   }
   
   .text-gradient {
-    @apply bg-gradient-to-r from-rezia-blue to-rezia-turquoise bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-reslo-blue to-reslo-turquoise bg-clip-text text-transparent;
   }
 
   .hero-glow {
@@ -149,7 +149,7 @@
   flex: 1 1 0;
 }
 
-.rezia-premium-badge {
+.Reslo-premium-badge {
   position: absolute;
   top: -22px;
   left: 50%;

@@ -113,7 +113,7 @@ const HistoryPage = () => {
               placeholder="Search by title or company"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rezia-blue"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-reslo-blue"
             />
           </div>
           {filteredItems.length > 0 ? (
@@ -126,7 +126,7 @@ const HistoryPage = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-3">
                       <div className="p-2 bg-blue-50 rounded-lg">
-                        <FileText className="h-6 w-6 text-rezia-blue" />
+                        <FileText className="h-6 w-6 text-reslo-blue" />
                       </div>
                       <div>
                         <h3 className="font-medium">{item.jobTitle}</h3>
@@ -176,7 +176,7 @@ const HistoryPage = () => {
             Optimize a resume to see your history
           </p>
           <Button
-            className="bg-rezia-blue hover:bg-rezia-blue/90"
+            className="bg-reslo-blue hover:bg-reslo-blue/90"
             onClick={() => router.push('/dashboard')}
           >
             Optimize Your First Resume

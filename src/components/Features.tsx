@@ -8,19 +8,19 @@ import {
 
 const features = [
   {
-    icon: <FileText className="h-10 w-10 text-rezia-blue" />,
+    icon: <FileText className="h-10 w-10 text-reslo-blue" />,
     title: "Analyze Your Resume",
     description:
       "AI scans for missing keywords, skills, and job matches instantly.",
   },
   {
-    icon: <Star className="h-10 w-10 text-rezia-blue" />,
+    icon: <Star className="h-10 w-10 text-reslo-blue" />,
     title: "Boost Your ATS Score",
     description:
       "Match exact phrases needed to pass the first screening.",
   },
   {
-    icon: <CheckCircle className="h-10 w-10 text-rezia-blue" />,
+    icon: <CheckCircle className="h-10 w-10 text-reslo-blue" />,
     title: "Rewrite Like a Recruiter",
     description:
       "Get language that resonates with hiring managers — instantly.",
@@ -32,14 +32,14 @@ const Features = () => {
     <section id="features" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-block rounded-full bg-rezia-blue px-4 py-1.5 text-xs font-semibold text-white mb-4">
+          <div className="inline-block rounded-full bg-reslo-blue px-4 py-1.5 text-xs font-semibold text-white mb-4">
             Features
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-2">
             Intelligent Resume Optimization
           </h2>
           <p className="text-lg text-gray-700">
-            Rezia leverages AI to transform your resume into a powerful tool that gets you noticed by employers and applicant tracking systems.
+            Reslo leverages AI to transform your resume into a powerful tool that gets you noticed by employers and applicant tracking systems.
           </p>
         </div>
 
@@ -75,7 +75,7 @@ const Features = () => {
         </div>
         
         <div className="mt-16 text-center animate-fade-in" style={{animationDelay: '0.6s'}}>
-          <div className="inline-block rounded-full bg-rezia-blue/10 px-4 py-1.5 text-sm font-medium text-rezia-blue mb-4">
+          <div className="inline-block rounded-full bg-reslo-blue/10 px-4 py-1.5 text-sm font-medium text-reslo-blue mb-4">
             Powered by advanced machine learning
           </div>
           <h3 className="text-2xl md:text-3xl font-bold mb-6">

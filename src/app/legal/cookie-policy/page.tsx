@@ -9,7 +9,7 @@ export default function CookiePolicy() {
       <Navbar />
       <main className="flex-grow container mx-auto px-4 py-8 max-w-4xl">
         <div className="prose prose-lg max-w-none">
-          <h1 className="text-3xl font-bold mb-8">Rezia Cookie Policy</h1>
+          <h1 className="text-3xl font-bold mb-8">Reslo Cookie Policy</h1>
           
           <div className="text-sm text-gray-600 mb-8">
             <p>Effective Date: March 19, 2024</p>
@@ -18,7 +18,7 @@ export default function CookiePolicy() {
 
           <div className="mb-8">
             <p className="text-lg">
-              This Cookie Policy explains how Rezia AI LLC ("Rezia", "we", "us", or "our") uses cookies and similar technologies to recognize you when you visit our website at https://rezia.ai (the "Site") or use our web-based resume optimization platform (the "Service"). It explains what these technologies are, why we use them, and your choices regarding their use.
+              This Cookie Policy explains how Reslo AI LLC ("Reslo", "we", "us", or "our") uses cookies and similar technologies to recognize you when you visit our website at https://Reslo.ai (the "Site") or use our web-based resume optimization platform (the "Service"). It explains what these technologies are, why we use them, and your choices regarding their use.
             </p>
             <p className="mt-4">
               For additional details on how we use your data, please refer to our Privacy Policy.
@@ -31,7 +31,7 @@ export default function CookiePolicy() {
               Cookies are small data files placed on your device (computer, smartphone, or tablet) when you visit a website. They allow websites to recognize your browser and capture user preferences and usage data.
             </p>
             <p>
-              Cookies may be first-party (set by Rezia) or third-party (set by external services such as analytics or payment platforms).
+              Cookies may be first-party (set by Reslo) or third-party (set by external services such as analytics or payment platforms).
             </p>
           </section>
 
@@ -110,10 +110,10 @@ export default function CookiePolicy() {
                     <td className="py-2 px-4">Cloudflare</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4">rezia_prefs</td>
+                    <td className="py-2 px-4">Reslo_prefs</td>
                     <td className="py-2 px-4">User-selected resume templates, themes</td>
                     <td className="py-2 px-4">Persistent</td>
-                    <td className="py-2 px-4">Rezia</td>
+                    <td className="py-2 px-4">Reslo</td>
                   </tr>
                 </tbody>
               </table>
@@ -159,7 +159,7 @@ export default function CookiePolicy() {
               Third parties (such as analytics providers or ad networks) may use cookies, tags, or pixels on our Site. These third parties may use data collected from you in accordance with their own privacy policies, which we encourage you to review.
             </p>
             <p>
-              Rezia is not responsible for how third parties manage cookies or personal data.
+              Reslo is not responsible for how third parties manage cookies or personal data.
             </p>
           </section>
 
@@ -181,8 +181,8 @@ export default function CookiePolicy() {
             <h2 className="text-2xl font-semibold mb-4">8. Contact Us</h2>
             <p>If you have any questions about our use of cookies or your cookie preferences, please contact:</p>
             <ul className="list-none pl-0 mt-2">
-              <li>privacy@rezia.ai</li>
-              <li>📍 Rezia AI LLC — Tampa, Florida</li>
+              <li>privacy@Reslo.ai</li>
+              <li>📍 Reslo AI LLC — Tampa, Florida</li>
             </ul>
           </section>
         </div>
