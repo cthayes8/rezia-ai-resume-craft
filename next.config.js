@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Ensure trailing slash on all routes to avoid temporary redirects
+  trailingSlash: true,
   /**
    * Custom webpack configuration to treat chrome-aws-lambda and puppeteer modules as externals.
    */
