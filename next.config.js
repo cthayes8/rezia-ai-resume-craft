@@ -1,7 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Ensure trailing slash on all routes to avoid temporary redirects
+  // Enable trailing slashes, and rewrite the non-slash webhook path to avoid external redirects
   trailingSlash: true,
+  async rewrites() {
+    return [
+      {
+        source: '/api/webhooks/stripe',
+        destination: '/api/webhooks/stripe/',
+      },
+    ];
+  },
   /**
    * Custom webpack configuration to treat chrome-aws-lambda and puppeteer modules as externals.
    */
