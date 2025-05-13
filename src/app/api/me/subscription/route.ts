@@ -8,8 +8,9 @@ export async function GET(req: Request) {
   const { userId, redirectToSignIn } = await auth();
   if (!userId) return redirectToSignIn();
 
+  // Fetch the most recent subscription for the user (regardless of status)
   const subscription = await prisma.subscription.findFirst({
-    where: { userId, status: { in: ['active', 'trialing'] } },
+    where: { userId },
     orderBy: { currentPeriodEnd: 'desc' },
   });
   if (!subscription) {
