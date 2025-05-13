@@ -31,10 +31,13 @@ export async function POST(req: Request) {
         const status = sub.status;
         const currentPeriodStart = new Date(sub.current_period_start * 1000);
         const currentPeriodEnd = new Date(sub.current_period_end * 1000);
-        // Pull userId from subscription metadata (set via subscription_data.metadata)
-        const userId = sub.metadata.userId;
+        // Determine userId: prefer session metadata, fallback to subscription metadata
+        const sess = session as Stripe.Checkout.Session;
+        const userId = sess.metadata?.userId || sub.metadata.userId;
         if (!userId) {
-          throw new Error(`Subscription ${subscriptionId} missing userId metadata`);
+          throw new Error(
+            `Missing userId metadata on session ${sess.id} and subscription ${subscriptionId}`
+          );
         }
         await prisma.subscription.upsert({
           where: { stripeSubscriptionId: subscriptionId },
@@ -60,10 +63,30 @@ export async function POST(req: Request) {
       case 'customer.subscription.updated': {
         const subObj = event.data.object as Stripe.Subscription;
         const subscriptionId = subObj.id;
-        const planName = subObj.items.data[0]?.price.id || undefined;
+
+        // Try to get the first subscription item (with pricing and period info)
+        const item = subObj.items?.data?.[0];
+        // Determine planName: prefer item.price.id, fallback to top-level subscription.plan.id
+        const planName = item?.price?.id ?? subObj.plan?.id;
+        // Determine billing period boundaries (unix seconds)
+        const periodStartUnix =
+          typeof subObj.current_period_start === 'number'
+            ? subObj.current_period_start
+            : item?.current_period_start;
+        const periodEndUnix =
+          typeof subObj.current_period_end === 'number'
+            ? subObj.current_period_end
+            : item?.current_period_end;
+        if (!periodStartUnix || !periodEndUnix) {
+          console.warn(
+            `Subscription ${subscriptionId} missing period bounds; skipping update.`
+          );
+          break;
+        }
+        const currentPeriodStart = new Date(periodStartUnix * 1000);
+        const currentPeriodEnd = new Date(periodEndUnix * 1000);
         const status = subObj.status;
-        const currentPeriodStart = new Date(subObj.current_period_start * 1000);
-        const currentPeriodEnd = new Date(subObj.current_period_end * 1000);
+
         await prisma.subscription.updateMany({
           where: { stripeSubscriptionId: subscriptionId },
           data: {
@@ -90,9 +113,10 @@ export async function POST(req: Request) {
         // ignore other events
         break;
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error handling stripe webhook:', err);
-    return NextResponse.json({ error: 'Webhook handling failed' }, { status: 500 });
+    const message = err?.message || 'Webhook handling failed';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
   return NextResponse.json({ received: true });
 }

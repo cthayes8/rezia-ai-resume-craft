@@ -34,6 +34,9 @@ export async function POST(req: Request) {
     mode: 'subscription',
     payment_method_types: ['card'],
     line_items: [{ price: planId, quantity: 1 }],
+    // Attach userId to the Checkout Session metadata (for webhook handlers)
+    metadata: { userId },
+    // Also attach to the subscription metadata (optional)
     subscription_data: { metadata: { userId } },
     customer_email: email ?? undefined,
     success_url,
