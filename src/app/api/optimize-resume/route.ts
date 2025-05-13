@@ -36,30 +36,25 @@ export async function POST(req: Request) {
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    // Ensure user record and fetch free run credits
+    // Ensure user record exists without violating email unique constraints
     const client = await clerkClient();
     const clerkUser = await client.users.getUser(userId);
     const email = clerkUser.emailAddresses[0]?.emailAddress || '';
     const fullName = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim();
-    // Ensure user record exists without violating unique email constraints
     let dbUser = await prisma.user.findUnique({ where: { id: userId } });
     if (dbUser) {
-      // Update existing user by ID
       dbUser = await prisma.user.update({
         where: { id: userId },
         data: { email, fullName },
       });
     } else {
-      // No user with this ID, check by email
       const emailUser = await prisma.user.findUnique({ where: { email } });
       if (emailUser) {
-        // Update existing user by email
         dbUser = await prisma.user.update({
           where: { email },
           data: { fullName },
         });
       } else {
-        // Create new user record
         dbUser = await prisma.user.create({
           data: { id: userId, email, fullName },
         });

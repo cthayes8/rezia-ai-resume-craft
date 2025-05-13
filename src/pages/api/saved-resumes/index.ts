@@ -8,18 +8,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!userId) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
-  // Ensure the user exists in our database
+  // Ensure user record exists without violating unique email constraints
   try {
-    // Initialize Clerk backend client and fetch user data
     const client = await clerkClient();
     const userRecord = await client.users.getUser(userId);
     const email = userRecord.emailAddresses[0]?.emailAddress || '';
     const fullName = `${userRecord.firstName || ''} ${userRecord.lastName || ''}`.trim();
-    await prisma.user.upsert({
-      where: { id: userId },
-      create: { id: userId, email, fullName },
-      update: { email, fullName }
-    });
+    let dbUser = await prisma.user.findUnique({ where: { id: userId } });
+    if (dbUser) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { email, fullName },
+      });
+    } else {
+      const emailUser = await prisma.user.findUnique({ where: { email } });
+      if (emailUser) {
+        await prisma.user.update({ where: { email }, data: { fullName } });
+      } else {
+        await prisma.user.create({ data: { id: userId, email, fullName } });
+      }
+    }
   } catch (e) {
     console.error('Error upserting user before saving resume:', e);
     return res.status(500).json({ error: 'Internal server error' });
