@@ -5,6 +5,8 @@ import { prisma } from '@/lib/prisma';
 // GET: list saved resumes; POST: save a new resume (max 3)
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { userId } = getAuth(req);
+  // Track the actual User.id in DB (may differ if merging by email)
+  let dbUserId = userId;
   if (!userId) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
@@ -23,8 +25,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } else {
       const emailUser = await prisma.user.findUnique({ where: { email } });
       if (emailUser) {
+        // Existing user by email: update fullName and use their id
         await prisma.user.update({ where: { email }, data: { fullName } });
+        dbUserId = emailUser.id;
       } else {
+        // Create new user with Clerk ID
         await prisma.user.create({ data: { id: userId, email, fullName } });
       }
     }
@@ -35,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'GET') {
     try {
       const saved = await prisma.savedResume.findMany({
-        where: { userId },
+        where: { userId: dbUserId },
         orderBy: { createdAt: 'desc' },
         select: { id: true, name: true, content: true, textHash: true, parsedData: true, createdAt: true }
       });
@@ -54,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const cleanContent = content.replace(/\u0000/g, '');
     try {
       // Enforce limit
-      const count = await prisma.savedResume.count({ where: { userId } });
+      const count = await prisma.savedResume.count({ where: { userId: dbUserId } });
       if (count >= 3) {
         return res.status(400).json({ error: 'Maximum of 3 saved resumes reached' });
       }
@@ -78,7 +83,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Persist saved resume with parsed data
       // Persist saved resume with sanitized content
       const saved = await prisma.savedResume.create({
-        data: { userId, name: name || `Resume ${count + 1}`, content: cleanContent, textHash, parsedData: parsedResume }
+        data: { userId: dbUserId, name: name || `Resume ${count + 1}`, content: cleanContent, textHash, parsedData: parsedResume }
       });
       return res.status(201).json(saved);
     } catch (err: any) {
