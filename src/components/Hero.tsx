@@ -22,9 +22,11 @@ const Hero = () => {
                   Try for Free -{">"} Optimize Now
                 </Button>
               </Link>
-              <Button variant="outline" className="border-reslo-blue text-reslo-blue hover:bg-reslo-blue/10 text-lg h-12 px-6">
-                Learn More
-              </Button>
+              <Link href="#features">
+                <Button variant="outline" className="border-reslo-blue text-reslo-blue hover:bg-reslo-blue/10 text-lg h-12 px-6">
+                  Learn More
+                </Button>
+              </Link>
             </div>
             <TrustedAvatarGroup className="mt-4" />
           </div>
