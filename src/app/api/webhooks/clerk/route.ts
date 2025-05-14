@@ -15,7 +15,24 @@ export async function POST(request: Request) {
     const event = await request.json();
     const { type, data } = event as any;
 
-    if (type === 'billing.subscription.created' || type === 'billing.subscription.updated') {
+    // Handle new user sign-up: ensure every Clerk user is in our database
+    if (type === 'user.created') {
+      const userId = (data.id || data.userId || data.clerkUserId) as string;
+      try {
+        const userRecord = await clerkClient.users.getUser(userId);
+        const email = userRecord.emailAddresses[0]?.emailAddress || '';
+        const fullName = `${userRecord.firstName || ''} ${userRecord.lastName || ''}`.trim();
+        await prisma.user.upsert({
+          where: { id: userId },
+          update: { email, fullName },
+          create: { id: userId, email, fullName },
+        });
+      } catch (err) {
+        console.error('Error upserting user on user.created webhook:', err);
+      }
+    }
+    // Handle subscription billing events
+    else if (type === 'billing.subscription.created' || type === 'billing.subscription.updated') {
       const sub = data;
       // Determine Clerk user ID and ensure a DB user record exists
       const userId = sub.userId || sub.clerkUserId;
