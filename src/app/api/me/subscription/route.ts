@@ -8,9 +8,9 @@ export async function GET(req: Request) {
   const { userId, redirectToSignIn } = await auth();
   if (!userId) return redirectToSignIn();
 
-  // Fetch the most recent subscription for the user (regardless of status)
+  // Fetch the most recent non-canceled subscription for the user
   const subscription = await prisma.subscription.findFirst({
-    where: { userId },
+    where: { userId, status: { not: 'canceled' } },
     orderBy: { currentPeriodEnd: 'desc' },
   });
   if (!subscription) {
@@ -24,5 +24,6 @@ export async function GET(req: Request) {
   if (planName === standardId) tierLabel = 'Standard';
   else if (planName === premiumId) tierLabel = 'Premium';
   else tierLabel = 'Paid';
-  return NextResponse.json({ subscription: { tierLabel, status, currentPeriodEnd } });
+  // Return detailed subscription info
+  return NextResponse.json({ subscription: { tierLabel, planName, status, currentPeriodEnd } });
 }
