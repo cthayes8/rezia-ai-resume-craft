@@ -45,7 +45,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       }
     }
-    return res.status(200).json({ freeRunsRemaining: dbUser.freeRunsRemaining });
+    return res.status(200).json({
+      freeRunsRemaining: dbUser.freeRunsRemaining,
+      plan: dbUser.plan
+    });
   } catch (err) {
     console.error('Quota status error:', err);
     return res.status(500).json({ error: 'Internal server error' });

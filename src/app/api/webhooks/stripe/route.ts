@@ -58,6 +58,8 @@ export async function POST(req: Request) {
             currentPeriodEnd,
           },
         });
+        // After successful payment, set user plan to paid
+        await prisma.user.update({ where: { id: userId }, data: { plan: 'paid' } });
         break;
       }
       case 'customer.subscription.updated': {
@@ -114,6 +116,9 @@ export async function POST(req: Request) {
             currentPeriodEnd,
           },
         });
+        // Update user plan based on subscription status
+        const newPlan = status === 'active' ? 'paid' : 'free';
+        await prisma.user.update({ where: { id: userId }, data: { plan: newPlan } });
         break;
       }
       case 'customer.subscription.deleted': {
@@ -125,6 +130,10 @@ export async function POST(req: Request) {
           where: { stripeSubscriptionId: subscriptionId },
           data: { status: 'canceled', updatedAt: new Date() },
         });
+        // On subscription deletion, revert user to free plan
+        if (subObj.metadata?.userId) {
+          await prisma.user.update({ where: { id: subObj.metadata.userId }, data: { plan: 'free' } });
+        }
         break;
       }
       default:

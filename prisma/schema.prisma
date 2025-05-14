@@ -3,7 +3,6 @@ generator client {
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
-/// Use DIRECT_URL for migrations/DDL to bypass pgbouncer
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
@@ -26,14 +25,16 @@ model User {
   email             String            @unique
   fullName          String?
   /// *
-  ///    * First name captured from Clerk sign-up
+  /// * First name captured from Clerk sign-up
   firstName         String?
   /// *
-  ///    * Last name captured from Clerk sign-up
+  /// * Last name captured from Clerk sign-up
   lastName          String?
   createdAt         DateTime          @default(now())
   deletedAt         DateTime?
   freeRunsRemaining Int               @default(1)
+  /// User plan: free, standard, or premium
+  plan              String            @default("free")
   coverLetters      CoverLetter[]
   feedbacks         Feedback[]
   optimizationRuns  OptimizationRun[]
@@ -57,38 +58,38 @@ model ResumeFile {
 
 /// A single optimization run: input/output, metadata & usage
 model OptimizationRun {
-  id             String        @id @default(cuid())
-  userId         String
-  resumeFileId   String?
-  jobDescription String
-  templateId     String
-  originalText   String
-  optimizedText  String
-  bulletRewrites Json
-  summaryRewrite String
-  skillsRewrite  String
-  keywords       Json
-  requirements   Json
-  targetTitle    String
-  targetCompany  String
-  aiModel        String
-  tokenCount     Int
-  costUsd        Float
-  createdAt      DateTime      @default(now())
-  deletedAt      DateTime?
-  coverLetter    CoverLetter?
-  feedbacks      Feedback[]
-  resumeFile     ResumeFile?   @relation(fields: [resumeFileId], references: [id])
-  user           User          @relation(fields: [userId], references: [id])
-  usageRecords   UsageRecord[]
-  /// ATS score for the original resume (0–100)
-  originalAtsScore    Float?
-  /// ATS score for the optimized resume (0–100)
-  optimizedAtsScore   Float?
-  /// Optional notes or feedback for the original resume score
-  originalAtsNotes    String?
+  id                String        @id @default(cuid())
+  userId            String
+  resumeFileId      String?
+  jobDescription    String
+  templateId        String
+  originalText      String
+  optimizedText     String
+  bulletRewrites    Json
+  summaryRewrite    String
+  skillsRewrite     String
+  keywords          Json
+  requirements      Json
+  targetTitle       String
+  targetCompany     String
+  aiModel           String
+  tokenCount        Int
+  costUsd           Float
+  createdAt         DateTime      @default(now())
+  deletedAt         DateTime?
   /// Optional notes or feedback for the optimized resume score
-  optimizedAtsNotes   String?
+  optimizedAtsNotes String?
+  /// ATS score for the optimized resume (0–100)
+  optimizedAtsScore Float?
+  /// Optional notes or feedback for the original resume score
+  originalAtsNotes  String?
+  /// ATS score for the original resume (0–100)
+  originalAtsScore  Float?
+  coverLetter       CoverLetter?
+  feedbacks         Feedback[]
+  resumeFile        ResumeFile?   @relation(fields: [resumeFileId], references: [id])
+  user              User          @relation(fields: [userId], references: [id])
+  usageRecords      UsageRecord[]
 }
 
 /// User feedback ratings and comments for a run
@@ -115,7 +116,7 @@ model Subscription {
   updatedAt            DateTime      @updatedAt
   stripeCustomerId     String?
   /// The Stripe subscription ID (unique per subscription)
-  stripeSubscriptionId String?        @unique
+  stripeSubscriptionId String?       @unique
   user                 User          @relation(fields: [userId], references: [id])
   usageRecords         UsageRecord[]
 }
@@ -150,10 +151,10 @@ model SavedResume {
   content    String
   createdAt  DateTime @default(now())
   /// *
-  ///    * Cached parsed resume JSON; use to skip re-parsing
+  /// * Cached parsed resume JSON; use to skip re-parsing
   parsedData Json?
   /// *
-  ///    * Hash of the raw resume text for caching parse results
+  /// * Hash of the raw resume text for caching parse results
   /// Hash of the raw resume text for caching parse results
   textHash   String?
   user       User     @relation(fields: [userId], references: [id])

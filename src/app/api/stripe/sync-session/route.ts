@@ -33,5 +33,7 @@ export async function GET(req: Request) {
     create: { userId, stripeCustomerId: sub.customer as string, stripeSubscriptionId: subscriptionId, planName, status, currentPeriodStart, currentPeriodEnd },
   });
 
+  // Upgrade user to paid plan
+  await prisma.user.update({ where: { id: userId }, data: { plan: 'paid' } });
   return NextResponse.json({ synced: true });
 }

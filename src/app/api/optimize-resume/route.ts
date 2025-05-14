@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     }
 
     // Authenticate user & enforce free-tier quota
-    const { userId, has } = await auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -64,8 +64,8 @@ export async function POST(req: Request) {
       }
     }
 
-    // Enforce free-tier quota using freeRunsRemaining
-    if (has({ plan: 'free_user' })) {
+    // Enforce free-tier quota: users on 'free' plan have limited runs
+    if (dbUser.plan === 'free') {
       if (dbUser.freeRunsRemaining <= 0) {
         return NextResponse.json(
           { error: 'Free tier quota exhausted', needUpgrade: true },
@@ -313,9 +313,9 @@ export async function POST(req: Request) {
     };
     // Persist optimization run, decrementing free run credit atomically for free users
     let run;
-    if (has({ plan: 'free_user' })) {
+    if (dbUser.plan === 'free') {
+      // decrement free run and record run atomically
       const [, newRun] = await prisma.$transaction([
-        // Decrement free runs on the correct DB user
         prisma.user.update({
           where: { id: dbUser.id },
           data: { freeRunsRemaining: { decrement: 1 } }
@@ -324,6 +324,7 @@ export async function POST(req: Request) {
       ]);
       run = newRun;
     } else {
+      // paid users or other plans: unlimited runs
       run = await prisma.optimizationRun.create({ data: runData as any });
     }
 

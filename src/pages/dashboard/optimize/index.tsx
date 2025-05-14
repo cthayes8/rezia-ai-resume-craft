@@ -15,7 +15,7 @@ export default function OptimizePage() {
   const [blocked, setBlocked] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { isLoaded, has } = useAuth();
+  const { isLoaded } = useAuth();
   useEffect(() => {
     if (!isLoaded) return;
     // If returning from Stripe Checkout, sync the session immediately
@@ -30,32 +30,24 @@ export default function OptimizePage() {
         })
         .catch(err => console.error('Sync error', err));
     }
-    // If user is on free plan, check their run count
-    if (has({ plan: 'free_user' })) {
-      fetch('/api/quota-status')
-        .then(async (res) => {
-          const data = await res.json();
-          if (!res.ok) {
-            throw new Error(data.error || 'Failed to check quota');
-          }
-          // Block if no free runs remaining
-          const remaining = data.freeRunsRemaining;
-          if (typeof remaining === 'number' && remaining <= 0) {
-            setBlocked(true);
-          }
-        })
-        .catch((err) => {
-          console.error('Quota check error:', err);
-          setError(err.message || 'Error checking quota');
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else {
-      // Paid tier never blocked
-      setLoading(false);
-    }
-  }, [isLoaded, has]);
+    // Always check user quota/plan from our API
+    fetch('/api/quota-status')
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to check quota');
+        }
+        // Block only free-tier users with no runs remaining
+        if (data.plan === 'free' && data.freeRunsRemaining <= 0) {
+          setBlocked(true);
+        }
+      })
+      .catch((err) => {
+        console.error('Quota check error:', err);
+        setError(err.message || 'Error checking quota');
+      })
+      .finally(() => setLoading(false));
+  }, [isLoaded]);
 
   if (loading) {
     return (

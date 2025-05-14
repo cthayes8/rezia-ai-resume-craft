@@ -268,7 +268,7 @@ const ResumeUpload = () => {
           {isParsing ? (
             <>
               <Loader2 className="animate-spin mr-2 h-5 w-5" />
-              Parsing resume...
+              Parsing resume... usually takes 1 minute
             </>
           ) : (
             'Optimize Resume'

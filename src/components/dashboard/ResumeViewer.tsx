@@ -15,7 +15,7 @@ import { tiptapExtensions } from '@/lib/tiptap';
 import { parseEditorJSON } from '@/lib/resumeParser';
 import { resumeDataToHTML } from '@/lib/resumeSerializer';
 import { useToast } from "@/components/ui/use-toast";
-import { Protect } from '@clerk/nextjs';
+// import Protect from Clerk; replaced by userPlan gating
 // ATSMeter temporarily disabled per request; scoring removed
 
 type ResumeTemplate = "professional" | "modern" | "creative";
@@ -106,6 +106,18 @@ const ResumeViewer = () => {
         /* no existing cover letter */
       });
   }, [optimizationResults]);
+
+  // Fetch user plan (free, standard, or premium)
+  const [userPlan, setUserPlan] = useState<string | null>(null);
+  useEffect(() => {
+    fetch('/api/quota-status')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch plan');
+        return res.json();
+      })
+      .then(data => setUserPlan(data.plan))
+      .catch(() => setUserPlan(null));
+  }, []);
 
   const handleDownload = async () => {
     if (!optimizationResults) return;
@@ -643,33 +655,45 @@ const ResumeViewer = () => {
                 <Download className="h-4 w-4" />
                 <span>Download</span>
               </Button>
+              {/* Cover Letter: premium users only */}
               {!showOriginal && (
-                <Protect plan="Reslo_premium" fallback={null}>
-                  {coverLetterUrl ? (
-                    <Button
-                      variant="outline"
-                      className="flex items-center gap-2"
-                      onClick={() => window.open(coverLetterUrl, '_blank')}
-                    >
-                      <FileText className="h-4 w-4" />
-                      <span>Download Cover Letter</span>
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      className="flex items-center gap-2"
-                      onClick={handleGenerateCoverLetter}
-                      disabled={isGeneratingCover}
-                    >
-                      {isGeneratingCover ? (
-                        <Loader2 className="animate-spin h-4 w-4" />
-                      ) : (
+                userPlan === 'premium' ? (
+                  <>
+                    {coverLetterUrl ? (
+                      <Button
+                        variant="outline"
+                        className="flex items-center gap-2"
+                        onClick={() => window.open(coverLetterUrl, '_blank')}
+                      >
                         <FileText className="h-4 w-4" />
-                      )}
-                      <span>{isGeneratingCover ? 'Generating...' : 'Get Cover Letter'}</span>
-                    </Button>
-                  )}
-                </Protect>
+                        <span>Download Cover Letter</span>
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        className="flex items-center gap-2"
+                        onClick={handleGenerateCoverLetter}
+                        disabled={isGeneratingCover}
+                      >
+                        {isGeneratingCover ? (
+                          <Loader2 className="animate-spin h-4 w-4" />
+                        ) : (
+                          <FileText className="h-4 w-4" />
+                        )}
+                        <span>{isGeneratingCover ? 'Generating...' : 'Get Cover Letter'}</span>
+                      </Button>
+                    )}
+                  </>
+                ) : (
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    onClick={() => { window.location.href = '/dashboard/account/billing'; }}
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Upgrade to Premium</span>
+                  </Button>
+                )
               )}
             </div>
           </div>
