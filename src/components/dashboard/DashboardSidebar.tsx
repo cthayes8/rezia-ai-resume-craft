@@ -38,7 +38,7 @@ const DashboardSidebar = () => {
 
   const { signOut } = useClerk();
   return (
-    <div className="hidden lg:block h-screen w-64 bg-white border-r border-gray-200">
+    <div className="h-screen w-64 bg-white border-r border-gray-200">
       <div className="h-full flex flex-col">
         <div className="p-4 border-b border-gray-200">
           <Link href="/" className="flex items-center">
