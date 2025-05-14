@@ -81,6 +81,14 @@ model OptimizationRun {
   resumeFile     ResumeFile?   @relation(fields: [resumeFileId], references: [id])
   user           User          @relation(fields: [userId], references: [id])
   usageRecords   UsageRecord[]
+  /// ATS score for the original resume (0–100)
+  originalAtsScore    Float?
+  /// ATS score for the optimized resume (0–100)
+  optimizedAtsScore   Float?
+  /// Optional notes or feedback for the original resume score
+  originalAtsNotes    String?
+  /// Optional notes or feedback for the optimized resume score
+  optimizedAtsNotes   String?
 }
 
 /// User feedback ratings and comments for a run

@@ -3,6 +3,9 @@ import { auth } from '@clerk/nextjs/server';
 import { clerkClient } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { createHash } from 'crypto';
+import OpenAI from 'openai';
+// Initialize OpenAI client for ATS scoring
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 import type { ResumeData, ExtractJDInfoResponse, ParseResumeResponse, MapKeywordsResponse, RewriteBulletResponse, RewriteSummaryResponse, RewriteSkillsResponse, OptimizationRunData, BulletRewriteResult } from '@/types/resume';
 // heavy parsing steps moved to Pages API for faster warm lambdas
@@ -324,7 +327,7 @@ export async function POST(req: Request) {
       run = await prisma.optimizationRun.create({ data: runData as any });
     }
 
-    // Return full result, ensuring certifications & awards are included
+    // Return full result (ATS scoring will be performed via a separate API)
     return NextResponse.json({
       runId: run.id,
       originalResume: originalParsedResume,

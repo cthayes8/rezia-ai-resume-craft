@@ -16,6 +16,7 @@ import { parseEditorJSON } from '@/lib/resumeParser';
 import { resumeDataToHTML } from '@/lib/resumeSerializer';
 import { useToast } from "@/components/ui/use-toast";
 import { Protect } from '@clerk/nextjs';
+// ATSMeter temporarily disabled per request; scoring removed
 
 type ResumeTemplate = "professional" | "modern" | "creative";
 
@@ -27,6 +28,9 @@ interface OptimizationResults {
   requirements: string[];
   targetTitle: string;
   targetCompany: string;
+  /** Optional ATS scores, populated after scoring */
+  originalAtsScore?: number | null;
+  optimizedAtsScore?: number | null;
 }
 
 const ResumeViewer = () => {
@@ -669,6 +673,7 @@ const ResumeViewer = () => {
               )}
             </div>
           </div>
+          {/* ATS scoring disabled temporarily */}
           {/* Paper wrapper */}
           <div className="relative bg-white shadow-lg rounded-lg overflow-hidden">
             {/* Floating toolbar */}
