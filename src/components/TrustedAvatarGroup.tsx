@@ -145,7 +145,7 @@ export function TrustedAvatarGroup({
           <Users size={16} className="text-primary" />
         </div>
         <p className="text-sm font-medium">
-          Trusted by <span className="font-bold">{formattedCount}+</span> job seekers
+          Trusted by <span className="font-bold">thousands</span> of job seekers
         </p>
       </div>
     </div>

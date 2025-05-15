@@ -90,6 +90,8 @@ model OptimizationRun {
   resumeFile        ResumeFile?   @relation(fields: [resumeFileId], references: [id])
   user              User          @relation(fields: [userId], references: [id])
   usageRecords      UsageRecord[]
+  /// Associated scorecard for this run (one-to-one)
+  scorecard         Scorecard?
 }
 
 /// User feedback ratings and comments for a run
@@ -141,6 +143,26 @@ model UsageEvent {
   meta      Json
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
+}
+
+/// Stored scorecards for resume optimization runs
+model Scorecard {
+  /// Unique identifier for this scorecard
+  id                String          @id @default(cuid())
+  /// Reference to the optimization run
+  optimizationRunId String          @unique
+  /// Overall score (0–100)
+  overallScore      Int
+  /// Detailed metrics per dimension (JSON array)
+  metrics           Json
+  /// LLM-generated key takeaways for this scorecard
+  takeaways         Json?
+  /// Discrete red-flag warning messages
+  redFlags          Json?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  /// Relation to the associated optimization run
+  optimizationRun   OptimizationRun @relation(fields: [optimizationRunId], references: [id])
 }
 
 /// Saved resumes that users can reuse (max 3 per user)

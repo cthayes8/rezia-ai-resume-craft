@@ -14,12 +14,13 @@ const Hero = () => {
             Get 3x More Interviews With an <span className="text-gradient">AI-Optimized Resume</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-700 mb-8 max-w-lg">
-            Reslo rewrites your resume to match the job—helping you pass ATS scans and land more interviews.
+            Most resumes get rejected before a human ever sees them.
+Reslo rewrites yours to pass AI filters and land interviews.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link href="/sign-up">
                 <Button className="bg-reslo-blue hover:bg-reslo-blue/90 text-lg h-12 px-6">
-                  Try for Free -{">"} Optimize Now
+                Rewrite My Resume to Match a Job
                 </Button>
               </Link>
               <Link href="#features">

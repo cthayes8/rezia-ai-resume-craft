@@ -15,6 +15,12 @@ import { tiptapExtensions } from '@/lib/tiptap';
 import { parseEditorJSON } from '@/lib/resumeParser';
 import { resumeDataToHTML } from '@/lib/resumeSerializer';
 import { useToast } from "@/components/ui/use-toast";
+import dynamic from 'next/dynamic';
+// Dynamically load ScoreSection on client only (disable SSR)
+const ScoreSection = dynamic(
+  () => import('./ScoreSection').then((mod) => mod.ScoreSection),
+  { ssr: false }
+);
 // import Protect from Clerk; replaced by userPlan gating
 // ATSMeter temporarily disabled per request; scoring removed
 
@@ -132,7 +138,7 @@ const ResumeViewer = () => {
       ? optimizationResults.originalResume
       : editedResume;
     try {
-      // Use the editor’s HTML output for exact WYSIWYG fidelity
+      // Use the editor's HTML output for exact WYSIWYG fidelity
       const html = editor ? editor.getHTML() : resumeDataToHTML(payloadData);
       const response = await fetch('/api/generate-docx-html', {
         method: 'POST',
@@ -613,109 +619,117 @@ const ResumeViewer = () => {
       </Head>
       {/* Centered paper container */}
       <div className="flex justify-center py-8">
-        <div className="w-full max-w-4xl">
-          {/* Non-document controls above the paper */}
-          <div className="flex flex-col lg:flex-row justify-between items-center mb-6 gap-4">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-800 mr-6">Your Resume</h1>
-              <button
-                className="flex items-center text-sm text-gray-600 hover:text-reslo-blue transition-colors"
-                onClick={toggleResume}
-              >
-                {showOriginal ? (
-                  <>
-                    <ToggleRight className="h-5 w-5 mr-1" />
-                    <span>Showing Original</span>
-                  </>
-                ) : (
-                  <>
-                    <ToggleLeft className="h-5 w-5 mr-1" />
-                    <span>Showing Optimized</span>
-                  </>
+        <div className="flex flex-row gap-8 w-full max-w-7xl">
+          {/* Main Resume Editor */}
+          <div className="flex-1 min-w-0">
+            {/* Non-document controls above the paper */}
+            <div className="flex flex-col lg:flex-row justify-between items-center mb-6 gap-4">
+              <div className="flex items-center">
+                <h1 className="text-2xl font-bold text-gray-800 mr-6">Your Resume</h1>
+                <button
+                  className="flex items-center text-sm text-gray-600 hover:text-reslo-blue transition-colors"
+                  onClick={toggleResume}
+                >
+                  {showOriginal ? (
+                    <>
+                      <ToggleRight className="h-5 w-5 mr-1" />
+                      <span>Showing Original</span>
+                    </>
+                  ) : (
+                    <>
+                      <ToggleLeft className="h-5 w-5 mr-1" />
+                      <span>Showing Optimized</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <div className="flex items-center gap-4">
+                {!showOriginal && (
+                  <Select value={template} onValueChange={(value) => setTemplate(value as ResumeTemplate)}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select template" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="professional">Professional</SelectItem>
+                      <SelectItem value="modern">Modern</SelectItem>
+                      <SelectItem value="creative">Creative</SelectItem>
+                    </SelectContent>
+                  </Select>
                 )}
-              </button>
-            </div>
-            <div className="flex items-center gap-4">
-              {!showOriginal && (
-                <Select value={template} onValueChange={(value) => setTemplate(value as ResumeTemplate)}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select template" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="professional">Professional</SelectItem>
-                    <SelectItem value="modern">Modern</SelectItem>
-                    <SelectItem value="creative">Creative</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-              <Button
-                className="bg-reslo-blue hover:bg-reslo-blue/90 flex items-center gap-2"
-                onClick={handleDownload}
-              >
-                <Download className="h-4 w-4" />
-                <span>Download</span>
-              </Button>
-              {/* Cover Letter: premium users only */}
-              {!showOriginal && (
-                userPlan === 'premium' ? (
-                  <>
-                    {coverLetterUrl ? (
-                      <Button
-                        variant="outline"
-                        className="flex items-center gap-2"
-                        onClick={() => window.open(coverLetterUrl, '_blank')}
-                      >
-                        <FileText className="h-4 w-4" />
-                        <span>Download Cover Letter</span>
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        className="flex items-center gap-2"
-                        onClick={handleGenerateCoverLetter}
-                        disabled={isGeneratingCover}
-                      >
-                        {isGeneratingCover ? (
-                          <Loader2 className="animate-spin h-4 w-4" />
-                        ) : (
+                <Button
+                  className="bg-reslo-blue hover:bg-reslo-blue/90 flex items-center gap-2"
+                  onClick={handleDownload}
+                >
+                  <Download className="h-4 w-4" />
+                  <span>Download</span>
+                </Button>
+                {/* Cover Letter: premium users only */}
+                {!showOriginal && (
+                  userPlan === 'premium' ? (
+                    <>
+                      {coverLetterUrl ? (
+                        <Button
+                          variant="outline"
+                          className="flex items-center gap-2"
+                          onClick={() => window.open(coverLetterUrl, '_blank')}
+                        >
                           <FileText className="h-4 w-4" />
-                        )}
-                        <span>{isGeneratingCover ? 'Generating...' : 'Get Cover Letter'}</span>
-                      </Button>
-                    )}
-                  </>
+                          <span>Download Cover Letter</span>
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          className="flex items-center gap-2"
+                          onClick={handleGenerateCoverLetter}
+                          disabled={isGeneratingCover}
+                        >
+                          {isGeneratingCover ? (
+                            <Loader2 className="animate-spin h-4 w-4" />
+                          ) : (
+                            <FileText className="h-4 w-4" />
+                          )}
+                          <span>{isGeneratingCover ? 'Generating...' : 'Get Cover Letter'}</span>
+                        </Button>
+                      )}
+                    </>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      className="flex items-center gap-2"
+                      onClick={() => { window.location.href = '/dashboard/account/billing'; }}
+                    >
+                      <FileText className="h-4 w-4" />
+                      <span>Upgrade to Premium</span>
+                    </Button>
+                  )
+                )}
+              </div>
+            </div>
+            {/* Paper wrapper */}
+            <div className="relative bg-white shadow-lg rounded-lg overflow-hidden">
+              {/* Floating toolbar */}
+              <div className="sticky top-0 z-10 bg-white border-b border-gray-200">
+                <SimpleToolbar editor={editor} />
+              </div>
+              {/* Document content using classic fonts */}
+              <div className={`p-6 font-serif leading-relaxed ${displayTemplateClass}`}>
+                {editor ? (
+                  <EditorContent editor={editor} />
                 ) : (
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2"
-                    onClick={() => { window.location.href = '/dashboard/account/billing'; }}
-                  >
-                    <FileText className="h-4 w-4" />
-                    <span>Upgrade to Premium</span>
-                  </Button>
-                )
-              )}
+                  <div>Loading editor...</div>
+                )}
+              </div>
             </div>
           </div>
-          {/* ATS scoring disabled temporarily */}
-          {/* Paper wrapper */}
-          <div className="relative bg-white shadow-lg rounded-lg overflow-hidden">
-            {/* Floating toolbar */}
-            <div className="sticky top-0 z-10 bg-white border-b border-gray-200">
-              <SimpleToolbar editor={editor} />
-            </div>
-            {/* Document content using classic fonts */}
-            <div className={`p-6 font-serif leading-relaxed ${displayTemplateClass}`}>
-              {editor ? (
-                <EditorContent editor={editor} />
-              ) : (
-                <div>Loading editor...</div>
-              )}
-            </div>
-          </div>
+          {/* Scorecard Sidebar */}
+          <aside className="w-[340px] shrink-0 hidden lg:block">
+            {optimizationResults && (
+              <ScoreSection runId={optimizationResults.runId} showOriginal={showOriginal} />
+            )}
+          </aside>
         </div>
       </div>
-  </>
+    </>
   );
 };
 
