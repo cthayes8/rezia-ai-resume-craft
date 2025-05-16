@@ -25,7 +25,7 @@ const Footer = () => {
                 />
               </a>
               {/* TikTok */}
-              <a href="https://tiktok.com/@yourprofile" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+              <a href="https://www.tiktok.com/@resloai" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
                 <img
                   src="/social_logos/tiktok (1).svg"
                   alt="TikTok"
