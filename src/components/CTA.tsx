@@ -10,7 +10,7 @@ const CTA = () => {
             Ready to Land Your Dream Job?
           </h2>
           <p className="text-lg opacity-90 mb-8 animate-fade-in" style={{animationDelay: '0.2s'}}>
-            Join thousands of job seekers who are getting more interviews with Reslo's AI-powered resume optimization.
+          Thousands are landing interviews they used to get ghosted from — powered by Reslo's AI resume rewrites.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in" style={{animationDelay: '0.4s'}}>
             <Button asChild className="bg-white text-reslo-blue hover:bg-white/90 text-lg h-12 px-8">

@@ -112,12 +112,12 @@ const Testimonials = () => {
   const cards = [...testimonials, ...testimonials];
 
   return (
-    <section id="testimonials" className="py-20 bg-gray-50">
+    <section id="testimonials" className="py-10 bg-gray-50">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            What Job Seekers Say
+        <div className="text-center max-w-3xl mx-auto mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          From Ignored to Interviewed.
           </h2>
           <p className="text-lg text-gray-700">
             Thousands of professionals have boosted their careers with Reslo. Real results. Real interviews.
@@ -129,7 +129,7 @@ const Testimonials = () => {
           className="relative overflow-x-auto whitespace-nowrap scrollbar-hide"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
-          <div className="flex gap-6 min-w-max py-2">
+          <div className="flex gap-6 min-w-max py-1">
             {cards.map((testimonial, idx) => (
               <Card
                 key={idx}
@@ -169,24 +169,24 @@ const Testimonials = () => {
         </div>
 
         {/* Results Block */}
-        <div className="mt-16 text-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm max-w-4xl mx-auto">
+        <div className="mt-8 text-center bg-white border border-gray-200 rounded-xl p-6 shadow-sm max-w-4xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between max-w-3xl mx-auto">
-            <div className="mb-6 md:mb-0 md:mr-8 text-left">
-              <div className="font-semibold text-xl mb-2 text-reslo-blue">
+            <div className="mb-4 md:mb-0 md:mr-8 text-left">
+              <div className="font-semibold text-xl mb-1 text-reslo-blue">
                 Results That Matter
               </div>
               <h3 className="text-2xl font-bold">
                 80% of users report more interview invitations
               </h3>
             </div>
-            <div className="grid grid-cols-2 gap-4 text-left">
-              <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="grid grid-cols-2 gap-3 text-left">
+              <div className="bg-gray-50 p-3 rounded-lg">
                 <div className="text-3xl font-bold text-reslo-blue">3x</div>
                 <div className="text-sm text-gray-600">
                   Increase in response rate
                 </div>
               </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-gray-50 p-3 rounded-lg">
                 <div className="text-3xl font-bold text-reslo-blue">94%</div>
                 <div className="text-sm text-gray-600">Pass ATS systems</div>
               </div>
@@ -195,8 +195,8 @@ const Testimonials = () => {
         </div>
 
         {/* CTA */}
-        <div className="mt-12 text-center">
-          <p className="text-lg text-gray-700 mb-4">
+        <div className="mt-6 text-center">
+          <p className="text-lg text-gray-700 mb-2">
             Want results like these?
           </p>
           <a

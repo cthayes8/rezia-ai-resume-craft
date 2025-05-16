@@ -15,25 +15,25 @@ const benefits = [
     icon: Brain,
     title: "AI That Understands Hiring",
     description:
-      "Reslo knows what recruiters and ATS bots are looking for—and tailors your resume accordingly.",
+      "Reslo knows what recruiters and ATS bots actually look for—and tailors your resume accordingly.",
   },
   {
     icon: Zap,
     title: "Built for Speed",
     description:
-      "Optimize your resume in seconds, not hours. No prompts, no guesswork—just results.",
+      "Get results in seconds, not hours. No prompts, no editing—just better resumes instantly.",
   },
   {
     icon: Target,
-    title: "Laser-Focused on Each Job",
+    title: "Tailored to Each Job",
     description:
-      "Reslo matches your resume to each job description, so you stand out every time you apply.",
+      "We rewrite your resume to match every job description, so you stand out every single time.",
   },
   {
     icon: PenTool,
-    title: "Includes Cover Letters",
+    title: "Built-In Cover Letters",
     description:
-      "Automatically generate tailored, job-specific cover letters with a tone that matches your resume.",
+      "Automatically generate a matching, job-specific cover letter with tone and keywords to match.",
   },
 ];
 
@@ -46,12 +46,10 @@ const WhyChooseUs = () => (
           Why Choose Us
         </Badge>
         <h2 className="text-3xl font-bold mb-4">
-          Why Job Seekers Choose Reslo
+        Why Reslo Gets You More Interviews
         </h2>
         <p className="text-gray-600">
-          Reslo isn't just another resume tool. We combine expert strategy with
-          cutting-edge AI to help you stand out in a sea of applicants—faster,
-          easier, and smarter than ever.
+        Reslo tailors your resume for every role—using real recruiter language, lightning-fast AI, and proven strategies to help you stand out and get seen.
         </p>
       </div>
 

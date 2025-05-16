@@ -9,21 +9,21 @@ import {
 const features = [
   {
     icon: <FileText className="h-10 w-10 text-reslo-blue" />,
-    title: "Analyze Your Resume",
+    title: "Scan for Weaknesses Instantly",
     description:
-      "AI scans for missing keywords, skills, and job matches instantly.",
+      "Reslo's AI finds what recruiters will flag — missing keywords, vague language, and weak phrasing — and fixes it fast.",
   },
   {
     icon: <Star className="h-10 w-10 text-reslo-blue" />,
-    title: "Boost Your ATS Score",
+    title: "Beat the Filters Automatically",
     description:
-      "Match exact phrases needed to pass the first screening.",
+      "Reslo rewrites your resume with the exact phrases ATS filters are looking for — so you get seen, not screened out.",
   },
   {
     icon: <CheckCircle className="h-10 w-10 text-reslo-blue" />,
-    title: "Rewrite Like a Recruiter",
+    title: "Sound Like the Perfect Candidate",
     description:
-      "Get language that resonates with hiring managers — instantly.",
+      "Reslo rewrites your resume with recruiter-style language that positions you as the top fit for the job — and gets you interviews.",
   },
 ];
 
@@ -36,10 +36,11 @@ const Features = () => {
             Features
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-2">
-            Intelligent Resume Optimization
+          Tailored for Every Job. Every Time.
           </h2>
           <p className="text-lg text-gray-700">
-            Reslo leverages AI to transform your resume into a powerful tool that gets you noticed by employers and applicant tracking systems.
+          You shouldn’t send the same resume to every job.
+          Reslo tailors it perfectly—for every role you apply to.
           </p>
         </div>
 
@@ -75,15 +76,11 @@ const Features = () => {
         </div>
         
         <div className="mt-16 text-center animate-fade-in" style={{animationDelay: '0.6s'}}>
-          <div className="inline-block rounded-full bg-reslo-blue/10 px-4 py-1.5 text-sm font-medium text-reslo-blue mb-4">
-            Powered by advanced machine learning
-          </div>
           <h3 className="text-2xl md:text-3xl font-bold mb-6">
-            The smarter way to tailor your resume for each application
+          Get More Interviews. With AI That Speaks Recruiter.
           </h3>
           <p className="text-lg text-gray-700 max-w-3xl mx-auto">
-            Job markets are competitive. Stand out by presenting the most relevant
-            version of your professional experience for every opportunity.
+          Reslo rewrites your resume using phrasing recruiters actually use—so you pass filters and get seen.
           </p>
         </div>
       </div>

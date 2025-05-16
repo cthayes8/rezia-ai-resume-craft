@@ -1,73 +1,67 @@
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
-import { ArrowDown } from "lucide-react";
 import TrustedAvatarGroup from "@/components/TrustedAvatarGroup";
+import React, { useEffect, useState } from "react";
 
 const Hero = () => {
+  // Animated FOMO number
+  const [jobSeekers, setJobSeekers] = useState(7421);
+
+  useEffect(() => {
+    // Animate the number up between 7421 and 7499, then loop back to 7421
+    const interval = setInterval(() => {
+      setJobSeekers((prev) => {
+        let change = Math.floor(Math.random() * 3) + 1; // increment by 1-3
+        let next = prev + change;
+        if (next > 7499) next = 7421; // loop back to start
+        return next;
+      });
+    }, 1200);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <section className="relative pt-28 pb-20 md:pt-36 md:pb-32 overflow-hidden">
-      <div className="hero-glow"></div>
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 md:pr-10 mb-12 md:mb-0 animate-fade-in">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-            Get 3x More Interviews With an <span className="text-gradient">AI-Optimized Resume</span>
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-white">
+      {/* Faint blue bloom, bottom right */}
+      <div className="absolute right-[-20%] bottom-[-20%] w-[700px] h-[700px] bg-reslo-blue/10 rounded-full blur-[120px] pointer-events-none"></div>
+      {/* Faint turquoise bloom, top left */}
+      <div className="absolute left-[-15%] top-[-15%] w-[500px] h-[500px] bg-reslo-turquoise/10 rounded-full blur-[100px] pointer-events-none"></div>
+      
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-3xl mx-auto text-center">
+          <div className="animate-fade-in">
+            {/* Badge */}
+            <div className="inline-block rounded-full bg-reslo-blue px-4 py-1.5 text-sm font-semibold text-white mb-8 shadow-lg">
+              AI-Powered Resume Optimization
+            </div>
+            
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight hero-headline drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]">
+              Your Resume Isn't Rejected —{' '}
+              <span className="text-gradient bg-clip-text text-transparent bg-gradient-to-r from-reslo-blue to-reslo-turquoise">
+              It's Invisible to Hiring Managers.
+              </span>
             </h1>
-            <p className="text-lg md:text-xl text-gray-700 mb-8 max-w-lg">
-            Most resumes get rejected before a human ever sees them.
-Reslo rewrites yours to pass AI filters and land interviews.
+            
+            <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-2xl mx-auto">
+            Reslo rewrites yours to pass AI filters and land real interviews — in under 60 seconds.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/sign-up">
-                <Button className="bg-reslo-blue hover:bg-reslo-blue/90 text-lg h-12 px-6">
-                Rewrite My Resume to Match a Job
-                </Button>
-              </Link>
-              <Link href="#features">
-                <Button variant="outline" className="border-reslo-blue text-reslo-blue hover:bg-reslo-blue/10 text-lg h-12 px-6">
-                  Learn More
+            
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+              <Link href="/sign-up" className="w-full sm:w-auto">
+                <Button className="bg-reslo-blue hover:bg-reslo-turquoise text-white text-lg h-14 px-8 rounded-full shadow-xl transition-all duration-300 w-full sm:w-auto">
+                Get My Free Optimization
                 </Button>
               </Link>
             </div>
-            <TrustedAvatarGroup className="mt-4" />
-          </div>
-          <div className="md:w-1/2 relative animate-fade-in" style={{animationDelay: '0.3s'}}>
-            <div className="relative bg-white rounded-2xl shadow-lg p-4 border border-gray-100 z-10">
-              <div className="bg-gray-50 p-4 rounded-xl">
-                <div className="flex items-center mb-3">
-                  <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                  <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                  <div className="text-sm text-gray-500 ml-2">Resume Optimization</div>
-                </div>
-                <div className="space-y-3">
-                  <div className="bg-white rounded p-3 border border-gray-200">
-                    <div className="h-2 bg-gray-200 rounded w-1/4 mb-2"></div>
-                    <div className="h-2 bg-gray-200 rounded w-3/4"></div>
-                  </div>
-                  <div className="bg-white rounded p-3 border border-gray-200">
-                    <div className="h-2 bg-gray-200 rounded w-2/5 mb-2"></div>
-                    <div className="h-2 bg-gray-200 rounded w-4/5"></div>
-                  </div>
-                  <div className="bg-reslo-blue/10 rounded p-3 border border-reslo-blue/30">
-                    <div className="flex justify-between mb-1">
-                      <div className="h-2 bg-reslo-blue/40 rounded w-1/4"></div>
-                      <div className="h-2 bg-reslo-blue/40 rounded w-1/6"></div>
-                    </div>
-                    <div className="h-2 bg-reslo-blue/40 rounded w-11/12"></div>
-                  </div>
-                  <div className="bg-white rounded p-3 border border-gray-200">
-                    <div className="h-2 bg-gray-200 rounded w-3/5 mb-2"></div>
-                    <div className="h-2 bg-gray-200 rounded w-4/6"></div>
-                  </div>
-                </div>
-                <div className="mt-4 flex justify-end">
-                  <div className="h-8 bg-reslo-blue rounded-md w-1/3"></div>
-                </div>
+            
+            <div className="mt-12 flex flex-col items-center gap-2">
+              <TrustedAvatarGroup />
+              <div className="text-sm md:text-base font-semibold text-gray-700 flex items-center gap-2">
+                <span className="text-green-500">✔️</span>
+                Used by <span className="text-reslo-blue font-bold">{jobSeekers.toLocaleString()}</span> job seekers this week
               </div>
             </div>
-            <div className="absolute top-8 -right-4 w-20 h-20 bg-reslo-turquoise/30 rounded-full blur-2xl"></div>
-            <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-reslo-blue/30 rounded-full blur-2xl"></div>
           </div>
         </div>
       </div>

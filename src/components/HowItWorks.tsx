@@ -3,20 +3,20 @@ import { ArrowRight } from "lucide-react";
 const steps = [
   {
     number: "01",
-    title: "Upload Your Resume",
-    description: "Upload your existing resume in any common format (PDF, Word, etc.).",
+    title: "Upload Resume + Job Description",
+    description: "Reslo dissects both documents to understand your experience and what the job requires.",
     image: "bg-gradient-to-br from-purple-100 to-blue-50"
   },
   {
     number: "02",
-    title: "Add Job Description",
-    description: "Paste the job description you're applying for so our AI can analyze it.",
+    title: "Get a Tailored Rewrite",
+    description: "Our AI restructures your resume line by line to match the job description—improving phrasing, keywords, and relevance.",
     image: "bg-gradient-to-br from-blue-100 to-teal-50"
   },
   {
     number: "03",
-    title: "Receive Optimized Resume",
-    description: "Get your tailored resume with suggested improvements to match the job requirements.",
+    title: "See Your Score & Download",
+    description: "Instant match scoring shows how well your resume aligns. Download the optimized version and apply with confidence.",
     image: "bg-gradient-to-br from-teal-100 to-green-50"
   }
 ];
@@ -27,11 +27,11 @@ const HowItWorks = () => {
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-block rounded-full bg-reslo-blue px-4 py-1.5 text-xs font-semibold text-white mb-4">
-            How it works
+          How Reslo Works
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">How Reslo Works</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Tailored in Seconds. Powered by AI.</h2>
           <p className="text-lg text-gray-700">
-            Optimizing your resume with Reslo is simple and takes just minutes. Follow these three easy steps to create job-specific resumes that get results.
+          Paste your job description. Upload your resume. Our AI restructures it to match the role, boosts your match score, and gets you ready to apply.
           </p>
         </div>
 
