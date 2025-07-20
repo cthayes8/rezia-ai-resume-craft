@@ -28,8 +28,8 @@ export async function POST(req: Request) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, { apiVersion: '2022-11-15' });
   // Create Stripe Checkout Session
   // After subscription, always return user to dashboard optimize
-  const success_url = `${origin}/dashboard/optimize?session_id={CHECKOUT_SESSION_ID}`;
-  const cancel_url = `${origin}/dashboard/optimize`;
+  const success_url = `${origin}/dashboard/unified?session_id={CHECKOUT_SESSION_ID}`;
+  const cancel_url = `${origin}/dashboard/unified`;
   const session = await stripe.checkout.sessions.create({
     mode: 'subscription',
     payment_method_types: ['card'],

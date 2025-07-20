@@ -43,9 +43,9 @@ export default function MarketingPricing() {
     if (!isLoaded) return;
     if (plan.isFree) {
       if (isSignedIn) {
-        router.push('/dashboard/optimize');
+        router.push('/dashboard/unified');
       } else {
-        router.push('/sign-up?redirect_url=/dashboard/optimize');
+        router.push('/sign-up?redirect_url=/dashboard/unified');
       }
     } else {
       const url = `/choose-plan?plan=${plan.priceId}`;

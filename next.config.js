@@ -22,7 +22,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, webpack }) => {
     if (isServer) {
       config.externals = config.externals || [];
       config.externals.push(({ context, request }, callback) => {
@@ -33,6 +33,24 @@ const nextConfig = {
         callback();
       });
     }
+
+    // Handle PDF parsing libraries
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      path: false,
+      os: false,
+      crypto: false,
+    };
+
+    // Ignore problematic files from pdf-parse
+    config.plugins.push(
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^\.\/test\/data\//,
+        contextRegExp: /pdf-parse/,
+      })
+    );
+
     return config;
   },
 };

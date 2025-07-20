@@ -4,7 +4,8 @@ export default function Page() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <SignUp
-        afterSignUpUrl="/dashboard/account"
+        forceRedirectUrl="/dashboard"
+        signInUrl="/sign-in"
       />
     </div>
   );

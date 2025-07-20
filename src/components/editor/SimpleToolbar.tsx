@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Editor } from '@tiptap/react';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,6 +8,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select';
+import { InputModal } from '@/components/ui/input-modal';
 import {
   Bold,
   Italic,
@@ -28,6 +29,8 @@ interface SimpleToolbarProps {
 }
 
 export const SimpleToolbar: React.FC<SimpleToolbarProps> = ({ editor }) => {
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  
   if (!editor) return null;
   return (
     <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 bg-white p-2">
@@ -148,13 +151,27 @@ export const SimpleToolbar: React.FC<SimpleToolbarProps> = ({ editor }) => {
       <Button
         size="icon"
         variant={editor.isActive('link') ? 'default' : 'outline'}
-        onClick={() => {
-          const url = window.prompt('Enter URL');
-          if (url) editor.chain().focus().setLink({ href: url }).run();
-        }}
+        onClick={() => setShowLinkModal(true)}
       >
         <Link2 />
       </Button>
+
+      {/* Link Modal */}
+      <InputModal
+        isOpen={showLinkModal}
+        onClose={() => setShowLinkModal(false)}
+        onConfirm={(url) => {
+          if (url) {
+            editor.chain().focus().setLink({ href: url }).run();
+          }
+        }}
+        title="Add Link"
+        description="Enter the URL you want to link to"
+        placeholder="https://example.com"
+        confirmText="Add Link"
+        cancelText="Cancel"
+        required={true}
+      />
     </div>
   );
 };

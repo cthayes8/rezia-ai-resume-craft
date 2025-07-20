@@ -1,36 +1,27 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-const publicPaths = ['/', '/sign-in', '/sign-up'];
+const isProtectedRoute = createRouteMatcher([
+  '/dashboard(.*)',
+  '/resume(.*)',
+  '/api/unified-resumes(.*)',
+  '/api/parse-resume(.*)',
+  '/api/optimize-resume(.*)',
+  '/api/advanced-analysis(.*)',
+  '/api/ai-rewrite(.*)',
+  '/api/ats-score(.*)',
+  '/api/extract-keywords(.*)',
+  '/api/generate-improvements(.*)',
+  '/api/me(.*)',
+  '/api/stripe(.*)',
+  '/api/billing-portal(.*)',
+  '/choose-plan(.*)'
+]);
 
-const isPublic = (path: string) => {
-  return publicPaths.some((x) =>
-    new RegExp(`^${x}`).test(path)
-  );
-};
-
-export const middleware = clerkMiddleware(
-  // Handler receives auth() helper and the request
-  async (auth, request) => {
-    const { pathname } = request.nextUrl;
-    // Allow webhook endpoints to bypass auth
-    if (pathname.startsWith('/api/webhooks')) {
-      return NextResponse.next();
-    }
-    // Allow public paths
-    if (isPublic(pathname)) {
-      return NextResponse.next();
-    }
-    // Authenticate the request
-    const authObj = await auth();
-    const { userId, redirectToSignIn } = authObj;
-    // If not signed in, redirect via Clerk
-    if (!userId) {
-      return redirectToSignIn();
-    }
-    return NextResponse.next();
+export const middleware = clerkMiddleware((auth, req) => {
+  if (isProtectedRoute(req)) {
+    auth().protect();
   }
-);
+});
 
 export const config = {
   matcher: ['/((?!.*\\..*|_next).*)', '/', '/(api|trpc)(.*)'],
